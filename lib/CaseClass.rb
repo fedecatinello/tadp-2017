@@ -1,6 +1,6 @@
 class CaseClass
 
-	def hola
+	def metodo_de_la_caseclass
 		'hola'
 	end
 
@@ -9,8 +9,7 @@ class CaseClass
 	end
 
   def self.< (sym)
-		puts "Paso por aca.."
-		return sym
+		return (self.ancestors.first.to_s + '~' + sym.to_s).to_s
 	end
 
 end
