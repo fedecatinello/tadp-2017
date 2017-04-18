@@ -1,6 +1,6 @@
 class CaseClass
 
-  @@variables = 'Todavia no le puso nada'
+  @@variables = nil
 
 	def metodo_de_la_caseclass
 		'hola'
@@ -15,7 +15,7 @@ class CaseClass
 	end
 
   def self.attr_accessor (*attrs)
-		@@variables = attrs
+		@@variables = attrs # Guardo los atributos en una variable de clase para poder pedirlas desde afuera
 		attrs.map { |attr|
 			self.send('attr_reader', attr)
 			self.instance_variable_set('@' + attr.to_s, ':D')
