@@ -16,6 +16,16 @@ end
 case_class CC_A < Padre do
   include M
   def metodo_hijo
-		"SOY EL HIJO"
+		"SOY EL HIJO A"
+	end
+end
+
+case_class CC_B do
+
+  attr_accessor :nombre, :apellido
+
+	include M
+	def metodo_hijo
+		"SOY EL HIJO B"
 	end
 end
