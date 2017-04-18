@@ -12,4 +12,8 @@ class CaseClass
 		return (self.ancestors.first.to_s + '~' + sym.to_s).to_s
 	end
 
+  def self.is_case_class?
+		true
+	end
+
 end
