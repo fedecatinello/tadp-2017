@@ -10,11 +10,11 @@ module CaseClassModule
 
     case_class = Object.const_get(arr_sym[0].to_s) # CaseClass que se está creando
 
+		case_class.class_eval &block # Se evalua el bloque que llega luego del nombre de la clase para definir metodos y atributos
+
+		instance_variables = case_class.get_variables # Un array con el nombre de todas las variables que tiene la clase
+
     if arr_sym.length == 1 # No está heredando
-
-      case_class.class_eval &block # Se evalua el bloque que llega luego del nombre de la clase para definir metodos y atributos
-
-      instance_variables = case_class.get_variables # Un array con el nombre de todas las variables que tiene la clase
 
       # define_singleton_method define EN LA CLASE QUE IMPORTE ESTE MODULO (Ejemplo Object) una funcion con
       # el nombre de Case Class que estamos creando, la cual se encarga de tomar los argumentos (valores de los atributos),
@@ -30,34 +30,16 @@ module CaseClassModule
           raise case_class.to_s + ' espera maximo ' + instance_variables.length.to_s + ' parametros y recibió ' + args.length.to_s
         end
 
-        create_inmutable_instance(case_class, args)
+        case_class.new(*args)
 
       })
 
-    elsif arr_sym.length == 2
+		elsif arr_sym.length == 2
       puts 'Aca va la logica de heredar'
+			
     else
       puts 'Aca hay que tirar un error extraño'
     end
-  end
-
-  private
-
-  def create_inmutable_instance(case_class, args)
-
-    aux_instance = case_class.new # Instancia que se va a devolver luego de prepararla
-
-    instance_variables = case_class.get_variables # Un array con el nombre de todas las variables que tiene la clase
-
-    cont = 0
-    args.map { |arg| # Por cada argumento que se le pasa a la funcion (valor a setear)
-      # Se setea cada variable del array instance_variables con cada argumento del array args en orden
-      aux_instance.instance_variable_set('@' + instance_variables[cont].to_s, arg)
-      cont += 1
-    }
-
-    # Finalmente se freeza la instancia y se devuelve
-    aux_instance.freeze
   end
 
 end
