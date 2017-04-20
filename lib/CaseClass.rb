@@ -26,4 +26,14 @@ class CaseClass
 		return @@variables
 	end
 
+  def self.initialize (*attrs)
+    puts 'Entro al new'
+    self.send('create_inmutable_instance', self.ancestors.first, attrs)
+	end
+
+  def to_s
+		@class_name = self.class.ancestors.first.to_s
+		@class_name +'('+@class_name.get_variables+')'
+	end
+
 end

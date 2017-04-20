@@ -29,3 +29,10 @@ case_class CC_B do
 		"SOY EL HIJO B"
 	end
 end
+
+case_class Alumno do
+  attr_accessor :nombre, :nota
+end
+case_class Curso do
+  attr_accessor :materia, :codigo, :alumnos
+end
