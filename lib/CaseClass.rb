@@ -23,7 +23,7 @@ class CaseClass
   end
 
   def self.variables
-    return @variables
+    @variables
   end
 
   def to_s
