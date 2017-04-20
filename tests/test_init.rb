@@ -37,6 +37,14 @@ case_class CC_B do
     'Mi to_s'
   end
 
+  def hash
+    2
+  end
+
+  def ==(ele)
+    false
+  end
+
 end
 
 case_class Alumno do

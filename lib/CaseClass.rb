@@ -27,7 +27,6 @@ class CaseClass
   end
 
   def to_s
-
     "#{self.class}(#{self.class.variables.map { |var| self.instance_variable_get('@' + var.to_s) }
                          .join(', ')})"
 
@@ -43,7 +42,6 @@ class CaseClass
   end
 
   def hash
-
     7 + self.class.variables.inject(0) { |result, var| result + self.instance_variable_get('@' + var.to_s).hash }
 
     # hash_aux = 7
@@ -53,7 +51,7 @@ class CaseClass
     # hash_aux
   end
 
-  def ==(other_instance)
+  def ==(other_instance) # TODO: Refactorizar
     instance = self
 
     if (instance.class != other_instance.class)
@@ -70,37 +68,36 @@ class CaseClass
     end
   end
 
-  def initialize(*args)
+  def initialize(*args) # Cada vez que hacemos un new sobre una case_class, creará una instancia inmutable
 
     instance_variables = self.class.variables
 
-    cont = 0
+    # Por cada argumento que se le pasa a la funcion (valor a setear)
+    # Se setea cada variable del array instance_variables con cada argumento del array args en orden
 
-    args.each do |arg| # Por cada argumento que se le pasa a la funcion (valor a setear)
-      # Se setea cada variable del array instance_variables con cada argumento del array args en orden
-      self.instance_variable_set('@' + instance_variables[cont].to_s, arg)
-      cont += 1
+    args.each_with_index do |arg, index|
+      self.instance_variable_set("@#{instance_variables[index]}", arg)
     end
 
     self.freeze
 
   end
 
+  # Metodos utilizados para evitar sobreescribir hash, == y to_s si es que ya fueron definidos
+  # en el cuerpo de la case_class o en sus superclases
+
   def self.method_missing(method_name, *args, &block)
-    if method_name.equal?'to_s'
-      self.send(method_name, *args, &block)
-    else
-      super
-    end
+    (%w[to_s hash ==].include?method_name)?self.send(method_name, *args, &block):super
   end
 
   def self.respond_to_missing?(method_name, include_private = false)
-    (method_name.equal?'to_s') || super
+    (%w[to_s hash ==].include?method_name) || super
   end
 
-  private
+  # Metodo utilizado para crear una instancia inmutable a partir de un simbolo con el nombre de la clase
+  # y argumentos que representan los atributos de la nueva instancia
 
-  def create_inmutable_instance(case_class, args)
+  def create_inmutable_instance(case_class, args) # TODO: este metodo no se llama en ningun lado!!!!!
 
     aux_instance = case_class.new # Instancia que se va a devolver luego de prepararla
 
@@ -115,6 +112,20 @@ class CaseClass
 
     # Finalmente se freeza la instancia y se devuelve
     aux_instance.freeze
+  end
+
+  # Metodo utilizado para el copiado inteligente de instancias
+
+  def copy(*args)
+
+    new_instance = self.dup
+
+    args.map do |arg|
+      raise 'Los argumentos deben ser de aridad 1' if arg.arity != 1
+      arg.call(new_instance.instance_variable_get("@#{arg.parameters[0][1]}"))
+    end
+
+    new_instance.freeze
   end
 
 end

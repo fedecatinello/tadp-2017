@@ -24,7 +24,7 @@ module CaseClassModule
       #	case_class Persona do attr_accessor :nombre, :edad end (defino una CaseClass Persona)
       # una_instancia = UnaCaseClass('Juan', 32) (hago una instancia de la clase con esos atributos SIN USAR NEW)
 
-      define_singleton_method(case_class.to_s, lambda { |*args| # Metodo con nombre de la clase que hace ..
+      define_singleton_method(case_class.to_s, lambda { |*args| # Metodo con nombre de la clase que crea ..
 
         # Tirar error si recibe mas parametros que atributos tiene para setear
         if args.length > instance_variables.length
