@@ -10,15 +10,16 @@ module CaseClassModule
 
     case_class = Object.const_get(arr_sym[0].to_s) # CaseClass que se está creando
 
-		case_class.class_eval &block # Se evalua el bloque que llega luego del nombre de la clase para definir metodos y atributos
+    case_class.class_eval &block # Se evalua el bloque que llega luego del nombre de la clase para definir metodos y atributos
 
-		instance_variables = case_class.get_variables # Un array con el nombre de todas las variables que tiene la clase
+    instance_variables = case_class.variables # Un array con el nombre de todas las variables que tiene la clase
 
     if arr_sym.length == 1 # No está heredando
 
       # define_singleton_method define EN LA CLASE QUE IMPORTE ESTE MODULO (Ejemplo Object) una funcion con
       # el nombre de Case Class que estamos creando, la cual se encarga de tomar los argumentos (valores de los atributos),
-      # crear una instancia de la clase con esos argumentos, freezar la instancia y devolverla. Para luego usarlo de la siguiente manera:
+      # y delegarle la responsabilidad al initialize de:
+      # crear una instancia de la clase con esos argumentos, freezar la instancia y devolverla.
       # Ejemplo:
       #	case_class Persona do attr_accessor :nombre, :edad end (defino una CaseClass Persona)
       # una_instancia = UnaCaseClass('Juan', 32) (hago una instancia de la clase con esos atributos SIN USAR NEW)
@@ -27,16 +28,16 @@ module CaseClassModule
 
         # Tirar error si recibe mas parametros que atributos tiene para setear
         if args.length > instance_variables.length
-          raise case_class.to_s + ' espera maximo ' + instance_variables.length.to_s + ' parametros y recibió ' + args.length.to_s
+          raise "#{case_class} espera máximo #{instance_variables.length} parámetros y recibió #{args.length}"
         end
 
         case_class.new(*args)
 
       })
 
-		elsif arr_sym.length == 2
+    elsif arr_sym.length == 2
       puts 'Aca va la logica de heredar'
-			
+
     else
       puts 'Aca hay que tirar un error extraño'
     end
@@ -53,7 +54,7 @@ class Object
   end
 
 =begin
-  def self.method_missing(symbol, *args, &block)
+  def self.method_missing(symbol, *args, &block)   TODO: sacar esto si no hace falta
     if symbol.is_case_class?
       puts symbol.to_s + 'is case class'
       #Object.const_get(symbol.to_s).class_eval &block
@@ -67,7 +68,7 @@ class Object
   end
 =end
 
-  def is_case_class?
+  def is_case_class? #TODO: sacar esto si no hace falta
     false
   end
 
