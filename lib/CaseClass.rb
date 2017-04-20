@@ -86,6 +86,18 @@ class CaseClass
 
   end
 
+  def self.method_missing(method_name, *args, &block)
+    if method_name.equal?'to_s'
+      self.send(method_name, *args, &block)
+    else
+      super
+    end
+  end
+
+  def self.respond_to_missing?(method_name, include_private = false)
+    (method_name.equal?'to_s') || super
+  end
+
   private
 
   def create_inmutable_instance(case_class, args)

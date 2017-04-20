@@ -5,6 +5,10 @@ class Padre
   def metodo_padre
     "SOY EL PADRE"
   end
+
+  def to_s
+    'viene del padre'
+  end
 end
 
 module M
@@ -28,6 +32,11 @@ case_class CC_B do
   def metodo_hijo
     "SOY EL HIJO B"
   end
+
+  def to_s
+    'Mi to_s'
+  end
+
 end
 
 case_class Alumno do
