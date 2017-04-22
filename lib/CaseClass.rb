@@ -116,16 +116,32 @@ class CaseClass
 
   # Metodo utilizado para el copiado inteligente de instancias
 
-  def copy(*args)
+  def copy(*args) # args pueden ser una o mas funciones lambda
 
     new_instance = self.dup
 
-    args.map do |arg|
-      raise 'Los argumentos deben ser de aridad 1' if arg.arity != 1
-      arg.call(new_instance.instance_variable_get("@#{arg.parameters[0][1]}"))
+    args.each do |lam| # Checkeo que todas las lambda sean de aridad 1
+      if lam.arity != 1
+        raise 'Las funciones lambda deben ser de aridad 1.'
+      end
+    end
+
+    args.each do |lam|
+      # El unico argumento de cada lambda es el nombre del atributo que quiere modificar
+
+      attr_name = lam.parameters.first.last.to_s # parameters es un array asi: [[:req, :nombre_de_variable]] por eso .first.last
+
+      # La lambda solo se aplica si el parametro (nombre de variable a modificar) esta definida en la instancia,
+      # si no se podrian crear nuevas variables a una instancia pasando en la lambda un nombre que no existe como
+      # variable (porque se hace un instance_variable_set).
+      if self.instance_variable_defined? ('@'+attr_name)
+        new_instance.instance_variable_set('@'+attr_name, lam[self.instance_variable_get('@'+attr_name)]) # lam[] aplica la funcion a un valor
+      end
+
     end
 
     new_instance.freeze
+
   end
 
 end
