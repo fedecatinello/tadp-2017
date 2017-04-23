@@ -85,10 +85,8 @@ class CaseClassBuilder
     if @superclass_name
 
 
-      else
-
+    else
       klass = CaseClass.dup
-
       klass.class_eval(&block)
     end
 
