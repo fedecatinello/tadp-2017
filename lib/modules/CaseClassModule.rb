@@ -1,7 +1,24 @@
-
 module CaseClassModule
 
-  def case_class(str, &block)
+  class ::Object
+
+    def self.const_missing(name)
+      Object.const_set(name.to_s, CaseClassBuilder.new(name))
+    end
+
+    def case_class(builder, &block)
+
+      builder.build(&block)
+
+    end
+
+  end
+
+  def case_class(builder, &block)
+
+    puts 'builder ' + builder.to_s
+
+    return
 
     # str es una concatenacion (string) entre el simbolo inicial y del que hereda con un ~ en el medio
     # si no hereda str solo tendra el nombre de la clase CaseClass
@@ -45,31 +62,38 @@ module CaseClassModule
 
 end
 
-class Object
 
-  include CaseClassModule
 
-  def self.const_missing(name)
-    Object.const_set(name.to_s, CaseClass.dup)
+class CaseClassBuilder
+
+  @class_name = nil
+  @superclass_name = nil
+
+  def <(superklass)
+    puts 'HERENCIA: ' + superklass.to_s
+    @superclass_name = superklass
   end
 
-=begin
-  def self.method_missing(symbol, *args, &block)   TODO: sacar esto si no hace falta
-    if symbol.is_case_class?
-      puts symbol.to_s + 'is case class'
-      #Object.const_get(symbol.to_s).class_eval &block
-    else
-      puts 'super'
+  def initialize(name)
+    puts 'INITIALIZE: ' + name.to_s
+    @class_name = name
+  end
+
+  def build (&block)
+    puts 'BUILD: ' + @class_name.to_s + ' -- ' + @superclass_name.to_s
+
+    if @superclass_name
+
+
+      else
+
+      klass = CaseClass.dup
+
+      klass.class_eval(&block)
     end
-  end
 
-  def self.respond_to_missing?(symbol, include_all=false)
-    true
-  end
-=end
+    Object.const_set(@class_name.to_s, klass)
 
-  def is_case_class? #TODO: sacar esto si no hace falta
-    false
   end
 
 end

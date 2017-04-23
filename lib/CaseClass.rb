@@ -42,7 +42,7 @@ class CaseClass
   end
 
   def hash
-    7 + self.class.variables.inject(0) { |result, var| result + self.instance_variable_get('@' + var.to_s).hash }
+     self.class.variables.inject(7) { |result, var| result + self.instance_variable_get('@' + var.to_s).hash }
 
     # hash_aux = 7
     # self.class.variables.each{ |var|        TODO: sacar si no hace falta
@@ -68,6 +68,7 @@ class CaseClass
     end
   end
 
+=begin
   def initialize(*args) # Cada vez que hacemos un new sobre una case_class, creará una instancia inmutable
 
     instance_variables = self.class.variables
@@ -82,6 +83,7 @@ class CaseClass
     self.freeze
 
   end
+=end
 
   # Metodos utilizados para evitar sobreescribir hash, == y to_s si es que ya fueron definidos
   # en el cuerpo de la case_class o en sus superclases
