@@ -1,5 +1,4 @@
 require_relative '../lib/modules/CaseClassModule.rb'
-require_relative '../lib/CaseClass.rb'
 require 'test/unit'
 
 class CaseClassTest < Test::Unit::TestCase
