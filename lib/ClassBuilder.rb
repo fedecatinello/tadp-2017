@@ -14,6 +14,7 @@ class CaseClassBuilder
       variables.each_with_index { |var, i|
         self.instance_variable_set('@'+var.to_s, attrs[i])
       }
+      self.freeze
     end
   end
 

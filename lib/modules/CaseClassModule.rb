@@ -37,4 +37,7 @@ case_class CC_X do
   def metodo_x
     'X'
   end
+  def trampa # Si esta freezada no me deberia dejar hacer esto.
+    @asd = 100
+  end
 end
