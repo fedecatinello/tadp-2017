@@ -1,4 +1,4 @@
-module CaseClassInstanceMixin
+module CaseClassMixin
 
   # Metodos utilizados para los buenos defaults
 

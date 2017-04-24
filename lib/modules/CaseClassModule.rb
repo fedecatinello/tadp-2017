@@ -1,3 +1,5 @@
+require_relative '../../lib/ClassBuilder'
+
 module CaseClassModule
 
   class ::Object
@@ -7,14 +9,12 @@ module CaseClassModule
     end
 
     def case_class(builder, &block)
-
       builder.build(&block)
-
     end
 
   end
 
-  def case_class(builder, &block)
+  def case_class(builder, &block) # TODO: esto vuela
 
     puts 'builder ' + builder.to_s
 
@@ -58,40 +58,6 @@ module CaseClassModule
     else
       puts 'Aca hay que tirar un error extraño'
     end
-  end
-
-end
-
-
-
-class CaseClassBuilder
-
-  @class_name = nil
-  @superclass_name = nil
-
-  def <(superklass)
-    puts 'HERENCIA: ' + superklass.to_s
-    @superclass_name = superklass
-  end
-
-  def initialize(name)
-    puts 'INITIALIZE: ' + name.to_s
-    @class_name = name
-  end
-
-  def build (&block)
-    puts 'BUILD: ' + @class_name.to_s + ' -- ' + @superclass_name.to_s
-
-    if @superclass_name
-
-
-    else
-      klass = CaseClass.dup
-      klass.class_eval(&block)
-    end
-
-    Object.const_set(@class_name.to_s, klass)
-
   end
 
 end
