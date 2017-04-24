@@ -3,12 +3,12 @@ module CaseClassMixin
   # Metodos utilizados para los buenos defaults
 
   def to_s
-    "#{self.class}(#{self.class.variables.map { |var| self.instance_variable_get('@' + var.to_s) }
+    "#{self.class}(#{self.instance_variables.map { |var| self.instance_variable_get(var) }
                          .join(', ')})"
   end
 
   def hash
-    self.class.variables.inject(7) { |result, var| result + self.instance_variable_get('@' + var.to_s).hash }
+    self.instance_variables.inject(7) { |result, var| result + self.instance_variable_get(var).hash }
   end
 
   def ==(other_instance) # TODO: Refactorizar
