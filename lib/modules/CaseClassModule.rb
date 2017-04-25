@@ -4,14 +4,29 @@ module CaseClassModule
 
   class ::Object
 
+    def self.attr_accessor (*args)
+      self.instance_variable_set('@all_attributes', args)
+      super
+    end
+
+    def self.all_attr
+      self.instance_variable_get('@all_attributes')
+    end
+
     def self.const_missing(name)
       builder = CaseClassBuilder.new
-      Object.const_set(name, builder)
       builder.set_class_name(name)
+      #Object.const_set(name, builder)
       return builder
     end
 
     def case_class(builder, &block)
+
+      if !block
+        throw 'No recibio bloque'
+        return
+      end
+
       Object.const_set(builder.get_class_name, builder.build(&block))
 
       # Defino un metodo con el mismo nombre de la clase para poder llamarla directamente y hacer el new
@@ -33,30 +48,13 @@ module CaseClassModule
         instance.freeze
       })
     end
-
   end
 
 end
 
-class Persona
-  attr_accessor :nombre, :edad
-  def saludar
-    'Hola'
-  end
+class Padre
+  attr_accessor :p1, :p2, :p3
 end
-case_class Alumno < Persona do
-  attr_accessor :carrera
-  def metodo_alumno
-    'Alumno'
-  end
-end
-
-case_class CC_X do
-  attr_accessor :asd, :dsa
-  def metodo_x
-    'X'
-  end
-  def trampa # Si esta freezada no me deberia dejar hacer esto.
-    @asd = 100
-  end
+class Hijo < Padre
+  attr_accessor :h1, :h2
 end

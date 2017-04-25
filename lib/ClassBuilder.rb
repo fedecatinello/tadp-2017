@@ -3,12 +3,21 @@ require_relative '../lib/modules/CaseClassMixin'
 class CaseClassBuilder
 
   @@block_logic = Proc.new do # Logica que tienen todas las CaseClass
+
     def self.attr_accessor (*attrs)
+
       self.class_variable_set('@@variables', attrs) # Guardo los atributos en una variable de clase para poder leerlos despues
       attrs.map do |attr|
         self.send('attr_reader', attr) # Creo getters, no setters
       end
+
+      # HAY QUE ENCONTRAR SU SUPERCLASE   superklass = ?
+      if superklass
+
+      end
+
     end
+
     def initialize (*attrs)
       variables = self.class.class_variable_get('@@variables')
       variables.each_with_index { |var, i|
@@ -20,7 +29,7 @@ class CaseClassBuilder
 
   def <(superklass)
     self.instance_variable_set('@superclass', superklass)
-    return self # Retorno self para que la funcion case_class siga recibiendo el CaseClassBuilder
+    self # Retorno self para que la funcion case_class siga recibiendo el CaseClassBuilder
   end
 
   def get_superclass
@@ -43,6 +52,7 @@ class CaseClassBuilder
   def build (&block)
 
     superklass = self.get_superclass
+
     if superklass
       klass = Class.new superklass
     else
@@ -52,6 +62,7 @@ class CaseClassBuilder
     klass.include CaseClassMixin # Incluimos el mixin con la logica de las case_class
     klass.class_eval &@@block_logic # Incluimos la logica de clase
     klass.class_eval &block if block_given?   # Incluimos la logica del cuerpo de la case_class
+
     klass
 
   end
