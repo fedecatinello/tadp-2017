@@ -49,14 +49,3 @@ module CaseClassModule
   end
 
 end
-
-case_class CC_A do
-  attr_accessor :a, :b
-  def cca
-    'a'
-  end
-end
-
-case_object CO_A do
-  attr_accessor :a
-end

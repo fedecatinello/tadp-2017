@@ -1,5 +1,27 @@
 module CaseClassMixin
 
+  def self.redefines
+    Proc.new do # Logica que tienen todas las CaseClass
+
+      self.class_variable_set('@@variables', [])
+
+      def self.attr_accessor (*attrs)
+        self.class_variable_set('@@variables', attrs) # Guardo los atributos en una variable de clase para poder leerlos despues
+        attrs.map do |attr|
+          self.send('attr_reader', attr) # Creo getters, no setters
+        end
+      end
+
+      def initialize (*attrs)
+        variables = self.class.class_variable_get('@@variables')
+        variables.each_with_index { |var, i|
+          self.instance_variable_set('@'+var.to_s, attrs[i])
+        }
+        self.freeze
+      end
+    end
+  end
+
   def is_method_in_ancestors?(method)
 
     ancestors = self.class.ancestors
