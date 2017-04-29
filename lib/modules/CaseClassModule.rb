@@ -4,22 +4,9 @@ module CaseClassModule
 
   class ::Object
 
-    # No es una solucion viable porque attr_accessor no tendria las variables
-    # del padre si esta clase hereda de otra.
-
-    # def self.attr_accessor (*args)
-    #   self.instance_variable_set('@all_attributes', args)
-    #   super
-    # end
-
-    # def self.all_attr
-    #   self.instance_variable_get('@all_attributes')
-    # end
-
     def self.const_missing(name)
       builder = CaseClassBuilder.new
       builder.set_class_name(name)
-      #Object.const_set(name, builder)
       return builder
     end
 
