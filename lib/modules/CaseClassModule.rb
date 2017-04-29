@@ -1,4 +1,6 @@
-require_relative '../../lib/ClassBuilder'
+require_relative 'CaseClassMixin'
+require_relative 'CaseObjectMixin'
+require_relative '../ClassBuilder'
 
 module CaseClassModule
 
@@ -12,12 +14,7 @@ module CaseClassModule
 
     def case_object(builder, &block)
 
-      if !block
-        throw 'No recibio bloque'
-        return
-      end
-
-      Object.const_set(builder.get_class_name, builder.build_case_object(&block).freeze)
+      Object.const_set(builder.get_class_name, builder.build(CaseObjectMixin, &block).new)
 
     end
 
@@ -28,7 +25,7 @@ module CaseClassModule
         return
       end
 
-      Object.const_set(builder.get_class_name, builder.build_case_class(&block))
+      Object.const_set(builder.get_class_name, builder.build(CaseClassMixin, &block))
 
       # Defino un metodo con el mismo nombre de la clase para poder llamarla directamente y hacer el new
       # Funcion Constructora (1a)
@@ -51,4 +48,15 @@ module CaseClassModule
     end
   end
 
+end
+
+case_class CC_A do
+  attr_accessor :a, :b
+  def cca
+    'a'
+  end
+end
+
+case_object CO_A do
+  attr_accessor :a
 end

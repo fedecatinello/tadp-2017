@@ -1,23 +1,5 @@
 module CaseClassMixin
 
-  def lalala
-    ancestors = self.class.ancestors
-
-    flag = false
-    result = ancestors.select do |elem|
-      if (elem == CaseClassMixin)
-        flag = true
-        next
-      end
-      if (elem == Object)
-        flag = false
-        next
-      end
-      flag
-    end
-    result
-  end
-
   def is_method_in_ancestors?(method)
 
     ancestors = self.class.ancestors
@@ -45,9 +27,9 @@ module CaseClassMixin
 
   def to_s
 
-    # if self.is_method_in_ancestors? :to_s
-    #   super
-    # else
+    if self.is_method_in_ancestors? :to_s
+      super
+    else
       variables = self.instance_variables
       if variables.length
         # implementación vieja: BUG con los array
@@ -67,7 +49,7 @@ module CaseClassMixin
         self.class.to_s + '()'
       end
     end
-  # end
+  end
 
   def hash
     self.instance_variables.inject(7) { |result, var| result + self.instance_variable_get(var).hash }
