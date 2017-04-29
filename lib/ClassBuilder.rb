@@ -55,7 +55,7 @@ class CaseClassBuilder
     end
 
     klass.include mixin # Incluimos el mixin con la logica de las case_class
-    klass.class_eval mixin.redefines.to_s
+    klass.class_eval &mixin.redefines
     klass.class_eval &block if block_given?   # Incluimos la logica del cuerpo de la case_class
 
     klass
