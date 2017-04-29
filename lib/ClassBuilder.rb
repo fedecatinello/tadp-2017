@@ -51,11 +51,7 @@ class CaseClassBuilder
     superklass = self.get_superclass
 
     if superklass
-      superklassDup = superklass.dup
-
-      superklassDup.define
-
-      klass = Class.new superklassDup
+      klass = Class.new superklass
     else
       klass = Class.new
     end
