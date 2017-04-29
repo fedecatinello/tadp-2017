@@ -46,6 +46,12 @@ case_class Curso do
   attr_accessor :materia, :codigo, :alumnos
 end
 
+case_object Cursando do
+  def nota
+    9
+  end
+end
+
 # module M
 #   def to_s() 
 #     "Soy un M"

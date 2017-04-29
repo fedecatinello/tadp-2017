@@ -7,12 +7,10 @@ class CaseClassBuilder
     self.class_variable_set('@@variables', [])
 
     def self.attr_accessor (*attrs)
-
       self.class_variable_set('@@variables', attrs) # Guardo los atributos en una variable de clase para poder leerlos despues
       attrs.map do |attr|
         self.send('attr_reader', attr) # Creo getters, no setters
       end
-
     end
 
     def initialize (*attrs)
@@ -21,6 +19,19 @@ class CaseClassBuilder
         self.instance_variable_set('@'+var.to_s, attrs[i])
       }
       self.freeze
+    end
+  end
+
+  @@block_logic_case_object = Proc.new do # Logica que tienen todas las CaseClass
+
+    self.class_variable_set('@@variables', [])
+
+    def self.attr_accessor (*attrs)
+      throw 'No se pueden poner atributos en un case object.'
+    end
+
+    def self.new (*args)
+      throw 'No se puede instanciar un case object.'
     end
   end
 
@@ -46,7 +57,7 @@ class CaseClassBuilder
     self.instance_variable_get('@class')
   end
 
-  def build (&block)
+  def build_case_class (&block)
 
     superklass = self.get_superclass
 
@@ -62,6 +73,14 @@ class CaseClassBuilder
 
     klass
 
+  end
+
+  def build_case_object (&block)
+    klass = Class.new
+    klass.singleton_class.include CaseClassMixin # Incluimos el mixin con la logica de las case_class
+    klass.singleton_class.class_eval &@@block_logic_case_object # Incluimos la logica de clase
+    klass.singleton_class.class_eval &block if block_given?   # Incluimos la logica del cuerpo de la case_class
+    klass
   end
 
 end

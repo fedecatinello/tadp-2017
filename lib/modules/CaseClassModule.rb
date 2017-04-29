@@ -23,6 +23,17 @@ module CaseClassModule
       return builder
     end
 
+    def case_object(builder, &block)
+
+      if !block
+        throw 'No recibio bloque'
+        return
+      end
+
+      Object.const_set(builder.get_class_name, builder.build_case_object(&block).freeze)
+
+    end
+
     def case_class(builder, &block)
 
       if !block
@@ -30,7 +41,7 @@ module CaseClassModule
         return
       end
 
-      Object.const_set(builder.get_class_name, builder.build(&block))
+      Object.const_set(builder.get_class_name, builder.build_case_class(&block))
 
       # Defino un metodo con el mismo nombre de la clase para poder llamarla directamente y hacer el new
       # Funcion Constructora (1a)

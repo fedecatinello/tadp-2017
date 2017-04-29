@@ -2,19 +2,23 @@ module CaseClassMixin
 
   def is_method_in_ancestors?(method)
 
-    # drop(2) hace que el array no tenga a la case_class
-    # ni a CaseClassMixin
-    self.class.ancestors.drop(2).each { | ancestor |
+    ancestors = self.class.ancestors
 
-      if ancestor == Object
-        #llegue a object, debo ejecutar mi metodo.
-        return false
+    flag = false
+    result = ancestors.select do |elem|
+      if (elem == CaseClassMixin)
+        flag = true
+        next
       end
+      if (elem == Object)
+        flag = false
+        next
+      end
+      flag
+    end
 
-      if ancestor.instance_methods(false).include?(method) #:to_s
-        # el metodo SI esta en algun ancestor
-        return true
-      end
+    result.any? { |ancestor|
+      ancestor.instance_methods(false).include? method
     }
 
   end
