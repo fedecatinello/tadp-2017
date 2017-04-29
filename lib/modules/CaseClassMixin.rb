@@ -1,10 +1,49 @@
 module CaseClassMixin
 
+  def is_method_in_ancestors?(method)
+
+    # drop(2) hace que el array no tenga a la case_class
+    # ni a CaseClassMixin
+    self.class.ancestors.drop(2).each { | ancestor |
+
+      if ancestor == Object
+        #llegue a object, debo ejecutar mi metodo.
+        return false
+      end
+
+      if ancestor.instance_methods(false).include?(method) #:to_s
+        # el metodo SI esta en algun ancestor
+        return true
+      end
+    }
+
+  end
+
   # Metodos utilizados para los buenos defaults
 
   def to_s
-    "#{self.class}(#{self.instance_variables.map { |var| self.instance_variable_get(var) }
-                         .join(', ')})"
+
+    if self.is_method_in_ancestors? :to_s
+      super
+    else
+      variables = self.instance_variables
+      if variables.length
+        # implementación vieja: BUG con los array
+        # "#{self.class}(#{self.instance_variables.map { |var| self.instance_variable_get(var) }
+        #                    .join(', ')})"
+        result = self.class.to_s + '('
+        self.instance_variables.each_with_index { |var, i|
+          value = self.instance_variable_get(var)
+          result += value == nil ? 'nil' : value.to_s
+          if i + 1 < variables.length
+            result += ', '
+          end
+        }
+        result += ')'
+      else
+        self.class.to_s + '()'
+      end
+    end
   end
 
   def hash

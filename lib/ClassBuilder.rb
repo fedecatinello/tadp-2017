@@ -4,16 +4,13 @@ class CaseClassBuilder
 
   @@block_logic = Proc.new do # Logica que tienen todas las CaseClass
 
+    self.class_variable_set('@@variables', [])
+
     def self.attr_accessor (*attrs)
 
       self.class_variable_set('@@variables', attrs) # Guardo los atributos en una variable de clase para poder leerlos despues
       attrs.map do |attr|
         self.send('attr_reader', attr) # Creo getters, no setters
-      end
-
-      # HAY QUE ENCONTRAR SU SUPERCLASE   superklass = ?
-      if superklass
-
       end
 
     end
@@ -54,7 +51,11 @@ class CaseClassBuilder
     superklass = self.get_superclass
 
     if superklass
-      klass = Class.new superklass
+      superklassDup = superklass.dup
+
+      superklassDup.define
+
+      klass = Class.new superklassDup
     else
       klass = Class.new
     end
