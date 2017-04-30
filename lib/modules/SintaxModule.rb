@@ -9,20 +9,17 @@ module CaseClassModule
     def self.const_missing(name)
       builder = CaseClassBuilder.new
       builder.set_class_name(name)
-      return builder
+      builder
     end
 
     def case_object(builder, &block)
-
       Object.const_set(builder.get_class_name, builder.build(CaseObjectMixin, &block).new)
-
     end
 
     def case_class(builder, &block)
 
-      if !block
-        throw 'No recibio bloque'
-        return
+      unless block_given?
+        throw 'ArgumentMismatchError: se esperaba un bloque'
       end
 
       Object.const_set(builder.get_class_name, builder.build(CaseClassMixin, &block))
@@ -36,16 +33,17 @@ module CaseClassModule
 
         if attrs.length > ivars.length
           # TODO: Poner un error mas lindo
-          throw 'Cantidad de argumentos incorrecta, se esperaban máximo: ' + ivars.length.to_s
+          throw "ArgumentMismatchError: se esperaban #{ivars.length.to_s} argumentos como máximo"
         end
 
-        attrs.each_with_index { |attr, i|
+        attrs.each_with_index do |attr, i|
           instance.send('instance_variable_set', ivars[i].to_s, attr)
-        }
+        end
 
         instance.freeze
       })
     end
+
   end
 
 end

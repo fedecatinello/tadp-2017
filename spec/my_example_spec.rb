@@ -1,5 +1,5 @@
 require 'rspec'
-require_relative('../lib/modules/CaseClassModule.rb')
+require_relative('../lib/modules/SintaxModule.rb')
 
 describe 'Case Class' do
 

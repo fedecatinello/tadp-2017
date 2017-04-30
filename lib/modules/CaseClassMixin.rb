@@ -5,14 +5,12 @@ module CaseClassMixin
 
       self.class_variable_set('@@variables', [])
 
-      def self.attr_accessor (*attrs)
+      def self.attr_accessor(*attrs)
         self.class_variable_set('@@variables', attrs) # Guardo los atributos en una variable de clase para poder leerlos despues
-        attrs.map do |attr|
-          self.send('attr_reader', attr) # Creo getters, no setters
-        end
+        attrs.map { |attr|  self.send('attr_reader', attr) } # Creo getters, no setters
       end
 
-      def initialize (*attrs)
+      def initialize(*attrs)
         variables = self.class.class_variable_get('@@variables')
         variables.each_with_index { |var, i|
           self.instance_variable_set('@'+var.to_s, attrs[i])
@@ -39,9 +37,12 @@ module CaseClassMixin
       flag
     end
 
-    result.any? { |ancestor|
+    # TODO Alternativa a lo de arriba
+    # result = ancestors[ancestors.index CaseClassMixin, ancestors.index Object]
+
+    result.any? do |ancestor|
       ancestor.instance_methods(false).include? method
-    }
+    end
 
   end
 
@@ -100,27 +101,25 @@ module CaseClassMixin
 
     new_instance = self.dup
 
-    args.each do |lam| # Checkeo que todas las lambda sean de aridad 1
-      if lam.arity != 1
-        raise 'Las funciones lambda deben ser de aridad 1.'
-      end
-    end
+    args.each do |lam| # El unico argumento de cada lambda es el nombre del atributo que quiere modificar
 
-    args.each do |lam|
-      # El unico argumento de cada lambda es el nombre del atributo que quiere modificar
+      if lam.arity != 1
+        throw 'ArgumentMismatchError: Las funciones lambda deben ser de aridad 1.'
+      end
 
       attr_name = lam.parameters.first.last.to_s # parameters es un array asi: [[:req, :nombre_de_variable]] por eso .first.last
 
       # La lambda solo se aplica si el parametro (nombre de variable a modificar) esta definida en la instancia,
       # si no se podrian crear nuevas variables a una instancia pasando en la lambda un nombre que no existe como
       # variable (porque se hace un instance_variable_set).
-      if self.instance_variable_defined? ('@'+attr_name)
+      if self.instance_variable_defined?('@'+attr_name)
         new_instance.instance_variable_set('@'+attr_name, lam[self.instance_variable_get('@'+attr_name)]) # lam[] aplica la funcion a un valor
       end
 
     end
 
     new_instance.freeze
+
   end
 
 end

@@ -1,4 +1,4 @@
-require_relative '../lib/modules/CaseClassModule.rb'
+require_relative '../lib/modules/SintaxModule.rb'
 
 class Padre
   attr_accessor :p1, :p2, :p3
