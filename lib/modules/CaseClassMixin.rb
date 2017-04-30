@@ -91,7 +91,7 @@ module CaseClassMixin
           return false
         end
       end
-      return true
+      true
     end
   end
 
@@ -120,6 +120,23 @@ module CaseClassMixin
 
     new_instance.freeze
 
+  end
+
+  # Redefinimos === para soportar ser evaluado como un patron
+  def ===(obj) # Me llega Alumno("Jose", Termino(9))
+
+    unless obj.is_a?self.class
+      false
+    end
+
+    variables = self.instance_variables.dup
+
+    @tuplas_a_comparar = variables.zip obj.instance_variables
+
+    @tuplas_a_comparar.all? { |src, dest|
+      p src, dest
+      src.=== dest
+    }
   end
 
 end

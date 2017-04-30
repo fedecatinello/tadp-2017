@@ -2,7 +2,7 @@ require_relative 'CaseClassMixin'
 require_relative 'CaseObjectMixin'
 require_relative '../ClassBuilder'
 
-module CaseClassModule
+module SyntaxModule
 
   class ::Object
 
@@ -33,7 +33,7 @@ module CaseClassModule
 
         if attrs.length > ivars.length
           # TODO: Poner un error mas lindo
-          throw "ArgumentMismatchError: se esperaban #{ivars.length.to_s} argumentos como máximo"
+          throw "ArgumentMismatchError: se esperaban #{ivars.length} argumentos como máximo"
         end
 
         attrs.each_with_index do |attr, i|

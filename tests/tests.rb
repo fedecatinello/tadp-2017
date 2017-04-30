@@ -1,5 +1,5 @@
 require 'test/unit'
-require_relative '../lib/modules/SintaxModule.rb'
+require_relative '../lib/modules/SyntaxModule.rb'
 
 class CaseClassTest < Test::Unit::TestCase
 

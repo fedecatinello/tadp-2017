@@ -1,4 +1,5 @@
-require_relative '../lib/modules/SintaxModule.rb'
+require_relative '../lib/modules/SyntaxModule.rb'
+require_relative '../lib/modules/PatternModule.rb'
 
 class Padre
   attr_accessor :p1, :p2, :p3
@@ -51,6 +52,22 @@ case_object Cursando do
     9
   end
 end
+
+case_class Termino do
+  attr_accessor :nota
+end
+
+
+alumno = Alumno("Jose", 9)
+valor = case alumno
+          when has(:nombre, "Raul") # El patrón falla: el nombre no es "Raul"
+            5
+          when has(:apellido, nil)  # El patrón falla: no hay atributo apellido
+            7
+          when has(:nota, 9)        # El patrón matchea
+            3
+        end
+valor
 
 # module M
 #   def to_s() 
