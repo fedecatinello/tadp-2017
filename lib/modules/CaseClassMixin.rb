@@ -3,6 +3,11 @@ module CaseClassMixin
   def self.redefines
     Proc.new do # Logica que tienen todas las CaseClass
 
+      def self.inherited(subklass)
+        Object.send :remove_const, subklass.to_s
+        throw 'No se puede heredar de una CaseClass.'
+      end
+
       self.class_variable_set('@@variables', [])
 
       def self.attr_accessor(*attrs)
