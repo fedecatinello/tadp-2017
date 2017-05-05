@@ -134,14 +134,17 @@ module CaseClassMixin
       false
     end
 
-    variables = self.instance_variables.dup
+    variables = self.instance_variables
 
-    @tuplas_a_comparar = variables.zip obj.instance_variables
-
-    @tuplas_a_comparar.all? { |src, dest|
-      p src, dest
-      src.=== dest
+    variables.each { |v|
+      val_obj = obj.instance_variable_get v
+      val_src = self.instance_variable_get v
+      if !(val_src === val_obj)
+        return false
+      end
     }
+    true
+
   end
 
 end

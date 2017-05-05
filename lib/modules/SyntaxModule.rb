@@ -1,10 +1,13 @@
 require_relative 'CaseClassMixin'
 require_relative 'CaseObjectMixin'
+require_relative 'PatternModule'
 require_relative '../ClassBuilder'
 
 module SyntaxModule
 
   class ::Object
+
+    include PatternModule
 
     def self.const_missing(name)
       builder = CaseClassBuilder.new

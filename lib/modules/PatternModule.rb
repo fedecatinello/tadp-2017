@@ -1,4 +1,3 @@
-
 module PatternModule
 
   class ::Object
