@@ -1,49 +1,10 @@
 module CaseClassMixin
 
-  def self.redefines
-    Proc.new do # Logica que tienen todas las CaseClass
-
-      def self.inherited(subklass)
-        Object.send :remove_const, subklass.to_s
-        throw 'No se puede heredar de una CaseClass.'
-      end
-
-      self.class_variable_set('@@variables', [])
-
-      def self.attr_accessor(*attrs)
-        self.class_variable_set('@@variables', attrs) # Guardo los atributos en una variable de clase para poder leerlos despues
-        attrs.map { |attr|  self.send('attr_reader', attr) } # Creo getters, no setters
-      end
-
-      def initialize(*attrs)
-        variables = self.class.class_variable_get('@@variables')
-        variables.each_with_index { |var, i|
-          self.instance_variable_set('@'+var.to_s, attrs[i])
-        }
-        self.freeze
-      end
-    end
-  end
-
   def is_method_in_ancestors?(method)
 
     ancestors = self.class.ancestors
 
-    flag = false
-    result = ancestors.select do |elem|
-      if (elem == CaseClassMixin)
-        flag = true
-        next
-      end
-      if (elem == Object)
-        flag = false
-        next
-      end
-      flag
-    end
-
-    # TODO Alternativa a lo de arriba
-    # result = ancestors[ancestors.index CaseClassMixin, ancestors.index Object]
+    result = ancestors[ancestors.index CaseClassMixin, ancestors.index Object]
 
     result.any? do |ancestor|
       ancestor.instance_methods(false).include? method
@@ -60,9 +21,6 @@ module CaseClassMixin
     else
       variables = self.instance_variables
       if variables.length
-        # implementación vieja: BUG con los array
-        # "#{self.class}(#{self.instance_variables.map { |var| self.instance_variable_get(var) }
-        #                    .join(', ')})"
         result = self.class.to_s + '('
         self.instance_variables.each_with_index { |var, i|
           value = self.instance_variable_get(var)
@@ -83,20 +41,20 @@ module CaseClassMixin
     self.instance_variables.inject(7) { |result, var| result + self.instance_variable_get(var).hash }
   end
 
-  def ==(other_instance) # TODO: Refactorizar
+  def ==(other_instance)
     instance = self
 
     if (instance.class != other_instance.class)
       return false
-    elsif (instance.instance_variables != other_instance.instance_variables)
+    end
+
+
+    if (instance.instance_variables != other_instance.instance_variables)
       return false
-    else
-      instance.instance_variables.each do |var|
-        if(instance.send(var.to_s[1..-1]) != other_instance.send(var.to_s[1..-1])) # string[1..-1] remueve el primer caracter, en este caso un @
-          return false
-        end
-      end
-      true
+    end
+
+    instance.instance_variables.all? do |var|
+      instance.send(var.to_s[1..-1]) != other_instance.send(var.to_s[1..-1]) # string[1..-1] remueve el primer caracter, en este caso un @
     end
   end
 
@@ -127,24 +85,42 @@ module CaseClassMixin
 
   end
 
-  # Redefinimos === para soportar ser evaluado como un patron
+  # Comparacion estructural
   def ===(obj) # Me llega Alumno("Jose", Termino(9))
 
     unless obj.is_a?self.class
-      false
+     return false
     end
 
-    variables = self.instance_variables
+    self.instance_variables.all? do |attr_name|
+      val_obj = obj.instance_variable_get attr_name
+      val_src = self.instance_variable_get attr_name
+      val_src === val_obj
+    end
 
-    variables.each { |v|
-      val_obj = obj.instance_variable_get v
-      val_src = self.instance_variable_get v
-      if !(val_src === val_obj)
-        return false
-      end
+  end
+
+end
+
+module CaseClassClassMixin
+
+  def self.inherited(subklass)
+    Object.send :remove_const, subklass.to_s
+    throw 'No se puede heredar de una CaseClass.'
+  end
+
+  @@variables = []
+
+  def self.attr_accessor(*attrs)
+    @@variables = attrs # Guardo los atributos en una variable de clase para poder leerlos despues
+    self.send('attr_reader', *attrs)
+  end
+
+  def initialize(*attrs)
+    @@variables.each_with_index { |var, i|
+      self.instance_variable_set('@'+var.to_s, attrs[i])
     }
-    true
-
+    self.freeze
   end
 
 end

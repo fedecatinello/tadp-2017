@@ -11,12 +11,12 @@ module SyntaxModule
 
     def self.const_missing(name)
       builder = CaseClassBuilder.new
-      builder.set_class_name(name)
+      builder.klass_name = name
       builder
     end
 
     def case_object(builder, &block)
-      Object.const_set(builder.get_class_name, builder.build(CaseObjectMixin, &block).new)
+      Object.const_set(builder.klass_name, builder.build(CaseObjectMixin, CaseObjectClassMixin, &block).new)
     end
 
     def case_class(builder, &block)
@@ -25,17 +25,23 @@ module SyntaxModule
         throw 'ArgumentMismatchError: se esperaba un bloque'
       end
 
-      Object.const_set(builder.get_class_name, builder.build(CaseClassMixin, &block))
+      Object.const_set(builder.klass_name, builder.build(CaseClassMixin, CaseClassClassMixin, &block))
 
-      # Defino un metodo con el mismo nombre de la clase para poder llamarla directamente y hacer el new
       # Funcion Constructora (1a)
-      define_singleton_method(builder.get_class_name, lambda { |*attrs|
-        klass = Object.const_get(builder.get_class_name)
+      add_constructor_syntax(builder)
+
+    end
+
+    private
+
+    def add_constructor_syntax(builder)
+
+      define_singleton_method(builder.klass_name, lambda { |*attrs|
+        klass = Object.const_get(builder.klass_name)
         instance = klass.new.dup # dup para que pierda el freeze
         ivars = instance.instance_variables
 
         if attrs.length > ivars.length
-          # TODO: Poner un error mas lindo
           throw "ArgumentMismatchError: se esperaban #{ivars.length} argumentos como máximo"
         end
 
@@ -45,6 +51,7 @@ module SyntaxModule
 
         instance.freeze
       })
+
     end
 
   end
