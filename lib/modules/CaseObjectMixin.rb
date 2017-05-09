@@ -4,8 +4,8 @@ module CaseObjectMixin
 
   include CaseClassMixin
 
-  def self.attr_accessor(*args)
-    throw('Un case object no puede definir atributos.')
+  def initialize
+    self.freeze
   end
 
   def copy
@@ -16,7 +16,7 @@ end
 
 module CaseObjectClassMixin
 
-  def self.attr_accessor (*args)
+  def attr_accessor (*args)
     throw 'No se pueden definir atributos en un Case Object.'
   end
 

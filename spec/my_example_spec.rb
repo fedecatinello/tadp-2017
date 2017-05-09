@@ -1,45 +1,45 @@
 require 'rspec'
-
-=begin
-describe '' do
-
-  before do
-  end
-
-  describe '' do
-    it '' do
-      expect().to eql()
-    end
-  end
-end
-=end
+require 'spec_healper.rb'
 
 describe 'Modelado basico de una case class' do
 
-  before do
-    require_relative('../lib/modules/SyntaxModule.rb')
+  before :all do
+    module M
+      def m1() 5 end
+    end
+
+    class C
+      def m2() 7 end
+    end
+
+    case_class X < C do
+      include M
+      attr_accessor :a, :b
+      def self.m3() 9 end
+    end
+
+    case_class Y do
+      def saludar
+        'hola'
+      end
+    end
+
+    @un_x = X.new
+    @un_y = Y.new
   end
 
   describe 'Requerimientos minimos' do
 
-    it 'tipo 1' do
-      module M
-        def m1() 5 end
-      end
-
-      class C
-        def m2() 7 end
-      end
-
-      case_class X < C do
-        include M
-        def self.m3() 9 end
-      end
-
-      un_x = X.new
-      expect(un_x.m1).to eql(5) # Retorna 5
-      expect(un_x.m2).to eql(7) # Retorna 7
+    it 'Algunas funciones' do
+      expect(@un_x.m1).to eql(5) # Retorna 5
+      expect(@un_x.m2).to eql(7) # Retorna 7
       expect(X.m3).to eql(9) # Retorna 9
+      expect(@un_y.saludar).to eql('hola')
+    end
+
+    it 'Deberia crear getters y no setters' do
+      @un_x.should respond_to('a')
+      @un_x.should_not respond_to('a=')
     end
 
     it 'Hereda de C' do
@@ -52,73 +52,63 @@ describe 'Modelado basico de una case class' do
     end
 
   end
+
 end
 
 describe 'Funcion Constructora' do
 
-  before do
+  before :all do
 
     case_class Alumno do
       attr_accessor :nombre, :nota
+      def hacer_trampa
+        @nota = 10
+      end
     end
 
     case_class Curso do
       attr_accessor :nombre, :codigo, :alumnos
     end
 
+    @curso = Curso("TADP", "k3031", [
+        Alumno("Jose", 8),
+        Alumno.new("Miguel", 2)
+    ])
+
   end
 
   describe 'Funcion Contructora' do
+
     it 'instanciacion de una case class' do
 
-      curso = Curso("TADP", "k3031", [
-          Alumno("Jose", 8),
-          Alumno.new("Miguel", 2)
-      ])
+      expect(@curso.nombre).to eql('TADP')
+      expect(@curso.codigo).to eql('k3031')
 
-      expect(curso.nombre).to eql('TADP')
-      expect(curso.codigo).to eql('k3031')
+      expect(@curso.alumnos[0].nombre).to eql('Jose')
+      expect(@curso.alumnos[1].nota).to eql(2)
 
-      #MANDARLE MENSAJES DE METODOS QUE NO ENTIENDE PARA QUE DE ERROR
-
-      expect(curso[0].nombre).to eql('Jose')
-      expect(curso[0].nota).to eql(8)
-
-      expect(curso[1].nombre).to eql('Miguel')
-      expect(curso[1].nota).to eql(2)
-
-      #COMPARAR CON VALORES ERRADOS PARA QUE DE ERROR
     end
   end
 end
-#
-# describe 'Instancias Inmutables' do
-#
-#   before do
-#
-#     case_class Alumno do
-#       attr_accessor :nombre, :nota
-#
-#       def hacer_trampa
-#         @nota = 10
-#       end
-#     end
-#   end
-#
-#   describe 'Instancias Inmutable' do
-#     it 'creacion instrancia inmutable' do
-#
-#       alumno = Alumno("Jose", 8)
-#       expect(alumno.nombre).to eql('Jose')
-#
-#       #MOSTRAR QUE LOS SIGUIENTES CASOS DAN ERROR
-#       #alumno.nombre = 10  <-- Error!
-#       #alumno.hacer_trampa <-- Error!
-#
-#     end
-#   end
-# end
-#
+
+describe 'Instancias Inmutables' do
+
+  before do
+    @curso = Curso.new('TADP')
+  end
+
+  it 'creacion instrancia inmutable' do
+
+      expect(@curso.nombre).to eql('TADP')
+
+      #MOSTRAR QUE LOS SIGUIENTES CASOS DAN ERROR
+      #alumno.nombre = 10  <-- Error!
+      #alumno.hacer_trampa <-- Error!
+
+  end
+
+end
+
 # describe 'Buenos Defaults' do
 #
 #   before do

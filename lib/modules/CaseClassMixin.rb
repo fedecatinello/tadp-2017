@@ -1,7 +1,8 @@
 module CaseClassMixin
 
   def initialize(*attrs)
-    self.class.variables.each_with_index { |var, i|
+    ivars = self.class.variables || []
+    ivars.each_with_index { |var, i|
       self.instance_variable_set('@'+var.to_s, attrs[i])
     }
     self.freeze
@@ -118,7 +119,7 @@ module CaseClassClassMixin
 
   attr_reader :variables
   def attr_accessor(*attrs)
-    self.instance_variable_set '@variables', attrs # Guardo los atributos en una variable leerlos de afuera
+    @variables = attrs # Guardo los atributos en una variable leerlos de afuera
     self.send('attr_reader', *attrs)
   end
 
