@@ -38,15 +38,15 @@ module SyntaxModule
 
       define_singleton_method(builder.klass_name, lambda { |*attrs|
         klass = Object.const_get(builder.klass_name)
+        ivars = klass.variables
         instance = klass.new.dup # dup para que pierda el freeze
-        ivars = instance.instance_variables
 
         if attrs.length > ivars.length
           throw "ArgumentMismatchError: se esperaban #{ivars.length} argumentos como máximo"
         end
 
         attrs.each_with_index do |attr, i|
-          instance.send('instance_variable_set', ivars[i].to_s, attr)
+          instance.send('instance_variable_set', "@#{ivars[i].to_s}", attr)
         end
 
         instance.freeze

@@ -1,10 +1,17 @@
 module CaseClassMixin
 
+  def initialize(*attrs)
+    self.class.variables.each_with_index { |var, i|
+      self.instance_variable_set('@'+var.to_s, attrs[i])
+    }
+    self.freeze
+  end
+
   def is_method_in_ancestors?(method)
 
     ancestors = self.class.ancestors
 
-    result = ancestors[ancestors.index CaseClassMixin, ancestors.index Object]
+    result = ancestors[(ancestors.index CaseClassMixin)+1..(ancestors.index Object)-1]
 
     result.any? do |ancestor|
       ancestor.instance_methods(false).include? method
@@ -104,23 +111,15 @@ end
 
 module CaseClassClassMixin
 
-  def self.inherited(subklass)
+  def inherited(subklass)
     Object.send :remove_const, subklass.to_s
     throw 'No se puede heredar de una CaseClass.'
   end
 
-  @@variables = []
-
-  def self.attr_accessor(*attrs)
-    @@variables = attrs # Guardo los atributos en una variable de clase para poder leerlos despues
+  attr_reader :variables
+  def attr_accessor(*attrs)
+    self.instance_variable_set '@variables', attrs # Guardo los atributos en una variable leerlos de afuera
     self.send('attr_reader', *attrs)
-  end
-
-  def initialize(*attrs)
-    @@variables.each_with_index { |var, i|
-      self.instance_variable_set('@'+var.to_s, attrs[i])
-    }
-    self.freeze
   end
 
 end
