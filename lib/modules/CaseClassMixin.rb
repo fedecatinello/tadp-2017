@@ -32,11 +32,20 @@ module CaseClassMixin
         result = self.class.to_s + '('
         self.instance_variables.each_with_index { |var, i|
           value = self.instance_variable_get(var)
-          result += value == nil ? 'nil' : value.to_s
-          if i + 1 < variables.length
-            result += ', '
+          if (value.is_a? Array)
+            result += '['
+            value.each { |x|
+              result += x.to_s
+              result += ', '
+            }
+            result.chomp!(', ')
+            result += ']'
+          else
+            result += value == nil ? 'nil' : value.to_s
           end
+          result += ', '
         }
+        result.chomp!(', ')
         result += ')'
         result
       else

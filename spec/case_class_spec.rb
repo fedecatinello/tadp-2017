@@ -134,12 +134,12 @@ describe 'Case Classes' do
 
     end
 
-    it 'to_s con todos los atributos seteados' do
-      expect(@persona_a.to_s).to eql('Persona(Juan, Carlos, 37)')
-    end
-    it 'to_s con menos atributos seteados' do
-      expect(@persona_b.to_s).to eql('Persona(Juan, Carlos, nil)')
-    end
+    # it 'to_s con todos los atributos seteados' do
+    #   expect(@persona_a.to_s).to eql('Persona(Juan, Carlos, 37)')
+    # end
+    # it 'to_s con menos atributos seteados' do
+    #   expect(@persona_b.to_s).to eql('Persona(Juan, Carlos, nil)')
+    # end
     it 'to_s con atributos case_class' do
       # en la definicion de to_s value recibe [persona_a, persona_b] y hace el to_s de ese array
       # habria que iterar el array y a esos valores hacer .to_s (persona_a, persona_b y no su array)
@@ -187,4 +187,87 @@ describe 'Case Classes' do
 
   end
 
+end
+
+describe 'Case Objects' do
+  before :all do
+  end
+  it 'attr_accessor deberia tirar error' do
+    expect{case_object UnCaseObj do attr_accessor :a, :b end}.to raise_error(UncaughtThrowError)
+  end
+  it 'El copy de un CaseObject es su propia instancia' do
+
+  end
+end
+
+describe 'Comun a CaseClass y CaseObject' do
+  describe 'Pattern Matching' do
+
+    before :all do
+
+      # case_class Alumno do
+      #   attr_accessor :nombre, :nota
+      #   def hacer_trampa
+      #     @nota = 10
+      #   end
+      # end
+
+      case_class Termino do
+        attr_accessor :nota
+      end
+
+      case_object Aprobo do
+      end
+
+      @alumno = Alumno.new('Jose', 9)
+      @otro_alumno = Alumno.new('Jose', Termino.new(9))
+
+    end
+
+    it 'cualquier cosa' do
+
+      x = case @alumno
+            when _
+              5
+          end
+
+      expect(x).to eql(5)
+
+    end
+
+    it 'pertenece a un tipo' do
+      valor = case @alumno
+                when (is_a Array)  # El patrón falla: alumno no es un array
+                  5
+                when (is_a Alumno) # El patrón pasa: alumno es de tipo alumno
+                  7
+              end
+      expect(valor).to eql(7)
+    end
+
+    it 'tener cierto valor en un atributo' do
+      valor = case @alumno
+                when has(:nombre, "Raul") # El patrón falla: el nombre no es "Raul"
+                  5
+                when has(:apellido, nil)  # El patrón falla: no hay atributo apellido
+                  7
+                when has(:nota, 9)        # El patrón matchea
+                  3
+              end
+      expect(valor).to eql(3)
+    end
+
+    it 'Comparacion Estructural' do
+      valor = case @otro_alumno
+                when Alumno.new('Jose', Termino.new(7)) # Falla: la nota no coincide.
+                  5
+                when Alumno.new('Jose', Aprobo)     # Falla: el estado no coincide.
+                  7
+                when Alumno.new(_, has(:nota, 9))   # Pasa! el nombre no importa y el estado tiene nota 9.
+                  3
+              end
+      expect(valor).to eql(3)
+    end
+
+  end
 end
