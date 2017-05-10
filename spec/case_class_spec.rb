@@ -1,85 +1,84 @@
 require 'rspec'
-require 'spec_healper.rb'
+require 'spec_helper.rb'
 
-describe 'Modelado basico de una case class' do
+describe 'Case Classes' do
 
   before :all do
-    module M
+
+    module UnMixin
       def m1() 5 end
     end
 
-    class C
+    class UnaClasePadre
       def m2() 7 end
     end
 
-    case_class X < C do
-      include M
+    case_class UnaCaseClass < UnaClasePadre do
+      include UnMixin
       attr_accessor :a, :b
       def self.m3() 9 end
     end
 
-    case_class Y do
+    case_class Saludador do
       def saludar
         'hola'
       end
     end
 
-    @un_x = X.new
-    @un_y = Y.new
+    @una_case_class = UnaCaseClass.new
+    @un_saludador = Saludador.new
+
   end
 
-  describe 'Requerimientos minimos' do
+  describe 'Funcionalidad basica' do
 
-    it 'Algunas funciones' do
-      expect(@un_x.m1).to eql(5) # Retorna 5
-      expect(@un_x.m2).to eql(7) # Retorna 7
-      expect(X.m3).to eql(9) # Retorna 9
-      expect(@un_y.saludar).to eql('hola')
+
+    it 'Validando metodos' do
+      expect(@una_case_class.m1).to eql(5) # Retorna 5
+      expect(@una_case_class.m2).to eql(7) # Retorna 7
+      expect(UnaCaseClass.m3).to eql(9) # Retorna 9
+      @un_saludador.should respond_to('saludar')
+      expect(@un_saludador.saludar).to eql('hola')
     end
 
     it 'Deberia crear getters y no setters' do
-      @un_x.should respond_to('a')
-      @un_x.should_not respond_to('a=')
+      @una_case_class.should respond_to('a')
+      @una_case_class.should_not respond_to('a=')
     end
 
     it 'Hereda de C' do
-      expect(X.superclass).to eql(C)
+      expect(UnaCaseClass.superclass).to eql(UnaClasePadre)
     end
 
     it 'Es de la clase X' do
-      un_x = X.new
-      expect(un_x.class).to eql(X)
+      expect(@una_case_class.class).to eql(UnaCaseClass)
     end
 
   end
 
-end
+  describe 'Funcion Constructora' do
 
-describe 'Funcion Constructora' do
+    before :all do
 
-  before :all do
-
-    case_class Alumno do
-      attr_accessor :nombre, :nota
-      def hacer_trampa
-        @nota = 10
+      case_class Alumno do
+        attr_accessor :nombre, :nota
+        def hacer_trampa
+          @nota = 10
+        end
       end
+
+      case_class Curso do
+        attr_accessor :nombre, :codigo, :alumnos
+      end
+
+      @jose = Alumno("Jose", 8)
+      @miguel = Alumno.new("Miguel", 2)
+
+      @curso = Curso("TADP", "k3031", [@jose, @miguel])
+
     end
 
-    case_class Curso do
-      attr_accessor :nombre, :codigo, :alumnos
-    end
-
-    @curso = Curso("TADP", "k3031", [
-        Alumno("Jose", 8),
-        Alumno.new("Miguel", 2)
-    ])
-
-  end
-
-  describe 'Funcion Contructora' do
-
-    it 'instanciacion de una case class' do
+    it 'Instanciacion de una case class' do
 
       expect(@curso.nombre).to eql('TADP')
       expect(@curso.codigo).to eql('k3031')
@@ -88,22 +87,14 @@ describe 'Funcion Constructora' do
       expect(@curso.alumnos[1].nota).to eql(2)
 
     end
-  end
-end
 
-describe 'Instancias Inmutables' do
+    it 'Instancia inmutables' do
 
-  before do
-    @curso = Curso.new('TADP')
-  end
+      @jose.should_not respond_to('nombre=')
+      expect{@miguel.nombre = 10}.to raise_error(NoMethodError)
+      expect{@miguel.hacer_trampa}.to raise_error(RuntimeError)
 
-  it 'creacion instrancia inmutable' do
-
-      expect(@curso.nombre).to eql('TADP')
-
-      #MOSTRAR QUE LOS SIGUIENTES CASOS DAN ERROR
-      #alumno.nombre = 10  <-- Error!
-      #alumno.hacer_trampa <-- Error!
+    end
 
   end
 

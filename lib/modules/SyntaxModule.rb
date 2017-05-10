@@ -25,9 +25,6 @@ module SyntaxModule
         throw 'ArgumentMismatchError: se esperaba un bloque'
       end
 
-      x = builder
-      y = builder.klass_name
-
       Object.const_set(builder.klass_name, builder.build(CaseClassMixin, CaseClassClassMixin, &block))
 
       # Funcion Constructora (1a)

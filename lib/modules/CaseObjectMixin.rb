@@ -16,7 +16,7 @@ end
 
 module CaseObjectClassMixin
 
-  def attr_accessor (*args)
+  def attr_accessor(*args)
     throw 'No se pueden definir atributos en un Case Object.'
   end
 
