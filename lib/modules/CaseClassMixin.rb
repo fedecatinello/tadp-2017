@@ -56,13 +56,12 @@ module CaseClassMixin
       return false
     end
 
-
     if (instance.instance_variables != other_instance.instance_variables)
       return false
     end
 
     instance.instance_variables.all? do |var|
-      instance.send(var.to_s[1..-1]) != other_instance.send(var.to_s[1..-1]) # string[1..-1] remueve el primer caracter, en este caso un @
+      instance.send(var.to_s[1..-1]) == other_instance.send(var.to_s[1..-1]) # string[1..-1] remueve el primer caracter, en este caso un @
     end
   end
 
@@ -75,7 +74,7 @@ module CaseClassMixin
     args.each do |lam| # El unico argumento de cada lambda es el nombre del atributo que quiere modificar
 
       if lam.arity != 1
-        throw 'ArgumentMismatchError: Las funciones lambda deben ser de aridad 1.'
+        raise 'ArgumentMismatchError: Las funciones lambda deben ser de aridad 1.'
       end
 
       attr_name = lam.parameters.first.last.to_s # parameters es un array asi: [[:req, :nombre_de_variable]] por eso .first.last
