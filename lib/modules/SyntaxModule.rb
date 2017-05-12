@@ -16,7 +16,7 @@ module SyntaxModule
     end
 
     def case_object(builder, &block)
-      Object.const_set(builder.klass_name, builder.build(CaseObjectMixin, CaseObjectClassMixin, &block).new)
+      Object.const_set(builder.klass_name, builder.build(CaseObjectMixin, CaseObjectClassMixin, &block).new(builder.klass_name))
     end
 
     def case_class(builder, &block)
@@ -24,9 +24,6 @@ module SyntaxModule
       unless block_given?
         throw 'ArgumentMismatchError: se esperaba un bloque'
       end
-
-      x = builder
-      y = builder.klass_name
 
       Object.const_set(builder.klass_name, builder.build(CaseClassMixin, CaseClassClassMixin, &block))
 

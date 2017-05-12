@@ -4,12 +4,17 @@ module CaseObjectMixin
 
   include CaseClassMixin
 
-  def initialize
+  def initialize(*args)
+    @case_object_name = args.first
     self.freeze
   end
 
   def copy
     self
+  end
+
+  def to_s
+    @case_object_name.to_s
   end
 
 end

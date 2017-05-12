@@ -199,12 +199,11 @@ describe 'Case Objects' do
 
   it 'Funcionalidad basica de case object' do
     expect(UnCaseObject).to respond_to('metodo_conocido')
-    expect(UnCaseObject.metodo_conocido()).to start_with('Metodo')
-    expect(UnCaseObject.instance_variables).to be_empty # Los case_object no tienen atributos
+    expect(UnCaseObject.metodo_conocido).to start_with('Metodo')
     expect(UnCaseObject).to be_a_kind_of(CaseClassMixin) # Se comportan como case_class
   end
 
-  it 'attr_accessor deberia tirar error' do
+  it 'attr_accessor deberia tirar error' do   # Los case_object no admiten atributos
     expect{case_object UnCaseObj do attr_accessor :a, :b end}.to raise_error(UncaughtThrowError)
   end
 
@@ -214,7 +213,7 @@ describe 'Case Objects' do
   end
 
   it 'to_s de un case object sin parentesis' do
-    expect(@otro_case_object.to_s).to eql('UnCaseObject')
+    expect(UnCaseObject.to_s).to eql('UnCaseObject')
   end
 
 end
