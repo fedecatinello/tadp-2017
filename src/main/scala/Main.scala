@@ -4,7 +4,9 @@ object Main {
     val vikingo2 : Vikingo = Vikingo("Jorge", CaracteristicaVikingo(2, 5, 3, 4), Some(Arma(10)))
     val vikingo3 : Vikingo = Vikingo("Pedro", CaracteristicaVikingo(1, 2, 1, 2), Some(ItemComestible(59)))
 
-    val primeroTorneo = Torneo(List(vikingo1, vikingo2, vikingo3), ???, ???)
+    val unDragon : Dragon = FuriaNocturna(50, 125, List( (v: Vikingo) => true, (v: Vikingo) => false ))
+
+    unDragon.saludar()
 
   }
 }

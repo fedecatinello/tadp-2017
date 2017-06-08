@@ -8,7 +8,11 @@ case class  Arma(danio: Float) extends ItemVikingo
 case class  ItemComestible(porcentaje: Float) extends ItemVikingo
 case object SistemaDeVuelo extends ItemVikingo
 
-case class Vikingo(nombre: String, caracteristicas: CaracteristicaVikingo, item: Option[ItemVikingo] = None) {
+trait Competidor
+
+case class Vikingo(nombre: String,
+                   caracteristicas: CaracteristicaVikingo,
+                   item: Option[ItemVikingo] = None) extends Competidor{
 
   // Geters para las caracteristicas
   def peso = caracteristicas.peso
@@ -22,5 +26,13 @@ case class Vikingo(nombre: String, caracteristicas: CaracteristicaVikingo, item:
       case _ => barbarosidad
     }
   }
+
+  def montar(dragon: Dragon) : Competidor = {
+    Jinete(this, ???)
+  }
+
+}
+
+case class Jinete(vikingo: Vikingo, dragon: Dragon) extends Competidor {
 
 }
