@@ -10,7 +10,7 @@ object Main {
     val dragonNocturno = Dragon(FuriaNocturna(0), peso = 50)
 
     val dragonNadderMortífero = Dragon(NadderMortífero, peso = 50)
-    val dragonGronckle = Dragon(Gronckle, peso = 50)
+    val dragonGronckle = Dragon(Gronckle(34), peso = 50)
 
     val competidor1 : Competidor =
       Jinete("Caballero del Zodiaco", CaracteristicaVikingo(1,1,1,1), Some(Arma(10)), dragonGronckle)

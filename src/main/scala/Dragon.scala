@@ -4,7 +4,7 @@ sealed trait EspecieDragon
 
 case class FuriaNocturna(danio: Double) extends EspecieDragon
 case object NadderMortífero extends EspecieDragon
-case object Gronckle extends EspecieDragon
+case class Gronckle(peso: Double) extends EspecieDragon
 
 object Requisitos {
 
@@ -36,7 +36,7 @@ case class Dragon(especie: EspecieDragon, velocidadBase: Double = 60, peso: Doub
   def velocidad: Double = {
     especie match {
       case FuriaNocturna(_) => velocidadInicial * 3
-      case Gronckle => velocidadInicial / 2
+      case Gronckle(_) => velocidadInicial / 2
       case _ => velocidadInicial
     }
   }
@@ -45,7 +45,7 @@ case class Dragon(especie: EspecieDragon, velocidadBase: Double = 60, peso: Doub
     especie match {
       case FuriaNocturna(danio) => danio
       case NadderMortífero => 150
-      case Gronckle => peso * 5
+      case Gronckle(pesoSoporta) => pesoSoporta * 5
     }
   }
 
@@ -54,16 +54,11 @@ case class Dragon(especie: EspecieDragon, velocidadBase: Double = 60, peso: Doub
     if (competidor.peso >= capacidadCarga && requisitos.exists(requisito => !requisito(competidor)))
       return false
 
-    (especie,requisitos) match {
-        case (FuriaNocturna(_), [:]) =>
-        case NadderMortífero =>
+    especie match {
+        case NadderMortífero => danio > competidor.danioTotal
+        case Gronckle(pesoSoporta) => pesoSoporta > competidor.peso
+        case _ => true
     }
-  }
-
-//  object cumple {
-//    def unapply(dragon: Dragon, competidor: Competidor) : Boolean = {
-//      dragon.requisitos.
-//    }
   }
 
 }
