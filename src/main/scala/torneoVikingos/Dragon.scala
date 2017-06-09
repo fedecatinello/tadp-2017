@@ -1,4 +1,4 @@
-import Requisitos.RequisitoMontura
+package torneoVikingos
 
 sealed trait EspecieDragon
 
@@ -6,26 +6,8 @@ case class FuriaNocturna(danio: Double) extends EspecieDragon
 case object NadderMortífero extends EspecieDragon
 case class Gronckle(peso: Double) extends EspecieDragon
 
-object Requisitos {
-
-  type RequisitoMontura = ((Dragon, Competidor) => Boolean)
-
-  case class RequisitoGronckle(peso: Double) extends RequisitoMontura {
-    def apply(competidor: Competidor) = {
-      peso > competidor.peso
-    }
-  }
-
-  case object RequisitoNadder extends RequisitoMontura {
-    def apply(dragon: Dragon, competidor: Competidor) = {
-      dragon.danio > competidor.danioTotal
-    }
-  }
-
-}
-
 case class Dragon(especie: EspecieDragon, velocidadBase: Double = 60, peso: Double,
-                  requisitos: List[RequisitoMontura] = List()) {
+                  requisitos: List[(Vikingo) => Boolean] = List()) {
 
   require(velocidadBase - peso > 0, "El peso no puede superar la velocidad base")
 
@@ -49,14 +31,14 @@ case class Dragon(especie: EspecieDragon, velocidadBase: Double = 60, peso: Doub
     }
   }
 
-  def puedeSerMontadoPor(competidor: Competidor): Boolean = {
+  def puedeSerMontadoPor(vikingo: Vikingo): Boolean = {
 
-    if (competidor.peso >= capacidadCarga && requisitos.exists(requisito => !requisito(competidor)))
+    if (vikingo.peso >= capacidadCarga && requisitos.exists(requisito => !requisito(vikingo)))
       return false
 
     especie match {
-        case NadderMortífero => danio > competidor.danioTotal
-        case Gronckle(pesoSoporta) => pesoSoporta > competidor.peso
+        case NadderMortífero => danio > vikingo.danioTotal
+        case Gronckle(pesoSoporta) => pesoSoporta > vikingo.peso
         case _ => true
     }
   }
