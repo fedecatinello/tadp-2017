@@ -2,20 +2,20 @@ package torneoVikingos
 
 import torneoVikingos.Posta2.Posta
 
-sealed trait ItemVikingo
+sealed trait ItemCompetidor
 
-case class  Arma(danio: Double) extends ItemVikingo
-case class  ItemComestible(porcentaje: Double) extends ItemVikingo
-case object SistemaDeVuelo extends ItemVikingo
+case class  Arma(danio: Double) extends ItemCompetidor
+case class  ItemComestible(porcentaje: Double) extends ItemCompetidor
+case object SistemaDeVuelo extends ItemCompetidor
 
-case class CaracteristicaVikingo(peso: Double, velocidad: Double, barbarosidad: Double, hambre: Double) {
+case class CaracteristicaCompetidor(peso: Double, velocidad: Double, barbarosidad: Double, hambre: Double) {
   require(peso > 0)
   require(velocidad > 0)
   require(barbarosidad > 0)
   require(hambre > 0)
 }
 
-abstract class Competidor(nombre: String, caracteristicas: CaracteristicaVikingo, item: Option[ItemVikingo] = None) {
+abstract class Competidor(nombre: String, caracteristicas: CaracteristicaCompetidor, item: Option[ItemCompetidor] = None) {
 
   // Geters para las caracteristicas
 
@@ -23,8 +23,13 @@ abstract class Competidor(nombre: String, caracteristicas: CaracteristicaVikingo
   def velocidad = caracteristicas.velocidad
   def barbarosidad = caracteristicas.barbarosidad
   def hambre = caracteristicas.hambre
-
   def getNombre = nombre
+
+
+  // Setters para las caracteristicas
+
+  def aumentaHambre(porcentaje: Double) = caracteristicas.copy(hambre = hambre + hambre * porcentaje)
+
 
   def danioTotal(): Double = {
     item match {
@@ -48,21 +53,25 @@ abstract class Competidor(nombre: String, caracteristicas: CaracteristicaVikingo
 
 }
 
-case class Vikingo(nombre: String, caracteristicas: CaracteristicaVikingo, item: Option[ItemVikingo] = None)
+case class Vikingo(nombre: String, caracteristicas: CaracteristicaCompetidor, item: Option[ItemCompetidor] = None)
   extends Competidor(nombre, caracteristicas, item) {
 
-  // Punto 1
+  def aumentaCaracteristicas(criterioAumento: => CaracteristicaCompetidor): Vikingo = {
+    copy(caracteristicas = criterioAumento)
+  }
+
+  // Punto 1 TODO: ver que onda el tema de Try aca (esto no implica puedeMontar(), sino que monta() y si no puede, rompe)
   def montar(dragon: Dragon): Competidor = {
     if(dragon.puedeSerMontadoPor(this))
-      Jinete(nombre, caracteristicas, item, dragon)
+      Jinete(this, dragon)
     else
       this
   }
 
 }
 
-case class Jinete(nombre: String, caracteristicas: CaracteristicaVikingo, item: Option[ItemVikingo] = None, dragon: Dragon)
-  extends Competidor(nombre, caracteristicas, item) {
+case class Jinete(vikingo: Vikingo, dragon: Dragon)
+  extends Competidor(vikingo.nombre, vikingo.caracteristicas, vikingo.item) {
 
   override def danioTotal = super.danioTotal() + dragon.danio
 

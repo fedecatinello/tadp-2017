@@ -1,5 +1,7 @@
 package torneoVikingos
 
+//TODO: object deprecado, remover si corresponde
+
 object Posta {
 
   type ActividadPosta = List[Competidor] => List[Competidor]

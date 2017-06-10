@@ -5,9 +5,9 @@ import torneoVikingos.Posta2.Posta
 class PostaSpec extends FlatSpec with Matchers {
 
   // Algunos vikingos
-  val asger = Vikingo("Asger", CaracteristicaVikingo(peso=100, velocidad=15, barbarosidad=50, hambre=30), Some(Arma(50)))
-  val arvid = Vikingo("Arvid", CaracteristicaVikingo(peso=80, velocidad=30, barbarosidad=150, hambre=10), None)
-  val asmund = Vikingo("Asmund", CaracteristicaVikingo(peso=250, velocidad=50, barbarosidad= 120, hambre=98), Some(Arma(50)))
+  val asger = Vikingo("Asger", CaracteristicaCompetidor(peso=100, velocidad=15, barbarosidad=50, hambre=30), Some(Arma(50)))
+  val arvid = Vikingo("Arvid", CaracteristicaCompetidor(peso=80, velocidad=30, barbarosidad=150, hambre=10), None)
+  val asmund = Vikingo("Asmund", CaracteristicaCompetidor(peso=250, velocidad=50, barbarosidad= 120, hambre=98), Some(Arma(50)))
 
   // Pesca sin requisitos de admision, se ordenan por el que mas pescado levanta (50% peso + 2*barbarosidad) y les aumenta 5% el hambre a todos
   val pesca = Posta(
@@ -17,9 +17,8 @@ class PostaSpec extends FlatSpec with Matchers {
         case Vikingo(_nombre, _caract, _item) => Vikingo(
           nombre = _nombre, item = _item, caracteristicas = _caract.copy(hambre = _caract.hambre * 1.1)
         )
-        case Jinete(_nombre, _caract, _item, _dragon) => Jinete(
-          nombre = _nombre, item = _item, caracteristicas = _caract.copy(hambre = _caract.hambre * 1.1), dragon = _dragon
-        )
+        case Jinete(_vikingo, _dragon) =>
+          Jinete(_vikingo.aumentaCaracteristicas(_vikingo.aumentaHambre(10)), dragon = _dragon)
       }
     }
   )
@@ -32,9 +31,8 @@ class PostaSpec extends FlatSpec with Matchers {
         case Vikingo(_nombre, _caract, _item) => Vikingo(
           nombre = _nombre, item = _item, caracteristicas = _caract.copy(hambre = _caract.hambre * 1.1)
         )
-        case Jinete(_nombre, _caract, _item, _dragon) => Jinete(
-          nombre = _nombre, item = _item, caracteristicas = _caract.copy(hambre = _caract.hambre * 1.1), dragon = _dragon
-        )
+        case Jinete(_vikingo, _dragon) =>
+          Jinete(_vikingo.aumentaCaracteristicas(_vikingo.aumentaHambre(10)), dragon = _dragon)
       }
     },
     requisitosAdmision = List((c) => c.pescadoPuedeLevantar > 200 )

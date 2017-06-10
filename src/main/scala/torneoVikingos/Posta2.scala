@@ -14,7 +14,7 @@ object Posta2 {
 
     // El requerimiento fijo de todas las postas es que una vez terminada (luego de que se le aplique el
     // efecto colateral) el hambre del competidor no supere el 100.
-    val requisitoFijo: Requisito = (c) => efectoColateral(c).hambre < 100
+    val requisitoFijo: Requisito = c => efectoColateral(c).hambre < 100
 
     // Recibe una lista de competidores y devuelve otra lista de vikingos
     // filtrados solo con los que pueden participar, es decir cumplen
@@ -28,7 +28,7 @@ object Posta2 {
     // Los ordena segun el criterio que define la posta para saber a quien le fue mejor.
     // Aplica el efecto colateral.
     def jugar(participantes: List[Competidor]): List[Competidor] = {
-      puedenParticipar(participantes).sortWith(criterioOrdenamiento).map(efectoColateral)
+      puedenParticipar(participantes).map(efectoColateral).sortWith(criterioOrdenamiento)
     }
 
     // Como jugar pero no les aplica el efecto colateral, solo ordena a los que pueden participar
