@@ -1,6 +1,6 @@
 package torneoVikingos
 
-import torneoVikingos.Posta.ActividadPosta
+import torneoVikingos.Posta2.Posta
 
 sealed trait ItemVikingo
 
@@ -38,8 +38,12 @@ abstract class Competidor(nombre: String, caracteristicas: CaracteristicaVikingo
   }
 
   // Punto 2
-  def esMejorQue(competidor: Competidor)(posta: ActividadPosta) : Boolean = {
-    posta(List(this, competidor)).head == this
+  def esMejorQue(competidor: Competidor)(posta: Posta) : Boolean = {
+    posta.ordenar(List(this, competidor)) match {
+      case List() => false // TODO: Preguntar ¿Si ninguno de los dos puede participar de la posta es false?
+      case List(c1: Competidor, c2: Competidor) => c1 == this
+    }
+    true
   }
 
 }

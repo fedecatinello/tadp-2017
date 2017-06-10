@@ -11,9 +11,9 @@ case class Dragon(especie: EspecieDragon, velocidadBase: Double = 60, peso: Doub
 
   require(velocidadBase - peso > 0, "El peso no puede superar la velocidad base")
 
-  def velocidadInicial = velocidadBase - peso
+  def velocidadInicial: Double = velocidadBase - peso
 
-  def capacidadCarga = peso * 0.2
+  def capacidadCarga: Double = peso * 0.2
 
   def velocidad: Double = {
     especie match {
