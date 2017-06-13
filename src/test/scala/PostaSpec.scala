@@ -14,11 +14,10 @@ class PostaSpec extends FlatSpec with Matchers {
     criterioOrdenamiento = (c1: Competidor, c2: Competidor) => c1.pescadoPuedeLevantar > c2.pescadoPuedeLevantar,
     efectoColateral = (c: Competidor) => {
       c match {
-        case Vikingo(_nombre, _caract, _item) => Vikingo(
-          nombre = _nombre, item = _item, caracteristicas = _caract.copy(hambre = _caract.hambre * 1.1)
-        )
+        case Vikingo(_nombre, _ , _item) =>
+          Vikingo(nombre = _nombre, item = _item, caracteristicas = c.aumentaHambre(10))
         case Jinete(_vikingo, _dragon) =>
-          Jinete(_vikingo.aumentaCaracteristicas(_vikingo.aumentaHambre(10)), dragon = _dragon)
+          Jinete(_vikingo.aumentaCaracteristicas(c.aumentaHambre(10)), dragon = _dragon)
       }
     }
   )
@@ -28,14 +27,13 @@ class PostaSpec extends FlatSpec with Matchers {
     criterioOrdenamiento = (c1, c2) => c1.pescadoPuedeLevantar > c2.pescadoPuedeLevantar,
     efectoColateral = (c: Competidor) => {
       c match {
-        case Vikingo(_nombre, _caract, _item) => Vikingo(
-          nombre = _nombre, item = _item, caracteristicas = _caract.copy(hambre = _caract.hambre * 1.1)
-        )
+        case Vikingo(_nombre, _ , _item) =>
+          Vikingo(nombre = _nombre, item = _item, caracteristicas = c.aumentaHambre(10))
         case Jinete(_vikingo, _dragon) =>
-          Jinete(_vikingo.aumentaCaracteristicas(_vikingo.aumentaHambre(10)), dragon = _dragon)
+          Jinete(_vikingo.aumentaCaracteristicas(c.aumentaHambre(10)), dragon = _dragon)
       }
     },
-    requisitosAdmision = List((c) => c.pescadoPuedeLevantar > 200 )
+    requisitosAdmision = List((c) => c.pescadoPuedeLevantar > 200)
   )
 
   "Cuando pregunte a la posta pesca quienes de los tres vikingos pueden participar" should

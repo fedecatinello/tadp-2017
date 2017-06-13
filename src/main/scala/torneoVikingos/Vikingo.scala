@@ -28,7 +28,7 @@ abstract class Competidor(nombre: String, caracteristicas: CaracteristicaCompeti
 
   // Setters para las caracteristicas
 
-  def aumentaHambre(porcentaje: Double) = caracteristicas.copy(hambre = hambre + hambre * porcentaje)
+  def aumentaHambre(porcentaje: Double) = caracteristicas.copy(hambre = hambre + (hambre * porcentaje)/100)
 
 
   def danioTotal(): Double = {
