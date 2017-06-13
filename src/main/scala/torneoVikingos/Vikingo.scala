@@ -31,22 +31,22 @@ abstract class Competidor(nombre: String, caracteristicas: CaracteristicaCompeti
   def aumentaHambre(porcentaje: Double) = caracteristicas.copy(hambre = hambre + (hambre * porcentaje)/100)
 
 
-  def danioTotal(): Double = {
+  def danioTotal: Double = {
     item match {
       case Some(Arma(danio)) => barbarosidad + danio
       case _ => barbarosidad
     }
   }
 
-  def pescadoPuedeLevantar() : Double = {
+  def pescadoPuedeLevantar : Double = {
     (peso * .5) + (barbarosidad * 2)
   }
 
   // Punto 2
   def esMejorQue(competidor: Competidor)(posta: Posta) : Boolean = {
     posta.ordenar(List(this, competidor)) match {
-      case List() => false // TODO: Preguntar ¿Si ninguno de los dos puede participar de la posta es false?
-      case List(c1: Competidor, c2: Competidor) => c1 == this
+      case Nil => return false // TODO: Preguntar ¿Si ninguno de los dos puede participar de la posta es false?
+      case List(c1: Competidor, _) => return c1 == this
     }
     true
   }
@@ -73,7 +73,7 @@ case class Vikingo(nombre: String, caracteristicas: CaracteristicaCompetidor, it
 case class Jinete(vikingo: Vikingo, dragon: Dragon)
   extends Competidor(vikingo.nombre, vikingo.caracteristicas, vikingo.item) {
 
-  override def danioTotal = super.danioTotal() + dragon.danio
+  override def danioTotal = super.danioTotal + dragon.danio
 
   override def velocidad = dragon.velocidad - peso
 
