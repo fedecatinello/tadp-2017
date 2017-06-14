@@ -1,6 +1,7 @@
 package torneoVikingos
 
 import torneoVikingos.Posta2.Posta
+import scala.util.{Try, Success, Failure}
 
 sealed trait ItemCompetidor
 
@@ -65,9 +66,46 @@ case class Vikingo(nombre: String, caracteristicas: CaracteristicaCompetidor, it
     if(dragon.puedeSerMontadoPor(this))
       Jinete(this, dragon)
     else
-      this
+      throw new IllegalStateException("no puede montar a este dragon")
   }
 
+  //Punto 3
+  def mejorMontura(dragones: List[Dragon], posta: Posta): Option[Competidor]= {
+    if (posta.puedenParticipar(List(this)).isEmpty)
+      throw new IllegalStateException("no puede participar en posta")
+
+    val dragonesPosibles = dragones.filter(d => d.puedeSerMontadoPor(this))
+    val monturasPosibles = this ::  dragonesPosibles.map(d => this.montar(d))
+    monturasPosibles.sortWith(posta.criterioOrdenamiento).headOption
+  }
+
+  // ME QUEDA LA DUDA SI EL METODO puedeSerMontadoPor ES VALIDO... SI NO LO ES, SE ME OCURRE
+  // HACER ALGO COMO LO QUE ESTOY HACIENDO ABAJO... ME PARECE MUY TIRADO DE LOS PELOS
+  /*
+  def trySortWith[T]( fc: (T, T) => Boolean, listaAOrdenar: List[T]): List[T] = {
+    var auxList = List()
+    listaAOrdenar.foreach{v =>
+      v match {
+        case Success(s) => auxList += s
+      }
+    }
+
+    /*
+    * ACA APLICAR EL FILTRADO NORMAL
+    * */
+  }
+
+  */
+  /*
+  // FORMA DE USO
+  * val vikngo = Vikingo()
+  * val listaDragones = ???
+  * val posta: Posta = ???
+  * Try(vikingo.mejorMontura(listaDragones, posta)) match {
+  *   case Success(jineteORvikingo) => jineteORvikingo
+  *   case Failure(e) => print(e.getMesage())
+  * }
+  * */
 }
 
 case class Jinete(vikingo: Vikingo, dragon: Dragon)

@@ -42,5 +42,4 @@ case class Dragon(especie: EspecieDragon, velocidadBase: Double = 60, peso: Doub
         case _ => true
     }
   }
-
 }
