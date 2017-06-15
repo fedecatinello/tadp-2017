@@ -1,6 +1,6 @@
 package torneoVikingos
 
-import torneoVikingos.Posta2.Posta
+import torneoVikingos.Posta.Posta
 import scala.util.{Try, Success, Failure}
 
 sealed trait ItemCompetidor
@@ -25,12 +25,13 @@ abstract class Competidor(nombre: String, caracteristicas: CaracteristicaCompeti
   def barbarosidad = caracteristicas.barbarosidad
   def hambre = caracteristicas.hambre
   def getNombre = nombre
-
+  def getItem = item
 
   // Setters para las caracteristicas
 
   def aumentaHambre(porcentaje: Double) = caracteristicas.copy(hambre = hambre + (hambre * porcentaje)/100)
 
+  def esPatapez: Boolean = this.nombre == "Patapez" && this.item.contains(ItemComestible(_))
 
   def danioTotal: Double = {
     item match {
@@ -39,15 +40,13 @@ abstract class Competidor(nombre: String, caracteristicas: CaracteristicaCompeti
     }
   }
 
-  def pescadoPuedeLevantar : Double = {
-    (peso * .5) + (barbarosidad * 2)
-  }
+  def pescadoPuedeLevantar: Double = (peso * .5) + (barbarosidad * 2)
 
   // Punto 2
   def esMejorQue(competidor: Competidor)(posta: Posta) : Boolean = {
     posta.ordenar(List(this, competidor)) match {
       case Nil => return false // TODO: Preguntar ¿Si ninguno de los dos puede participar de la posta es false?
-      case List(c1: Competidor, _) => return c1 == this
+      case x :: _ => return x == this
     }
     true
   }
@@ -70,12 +69,13 @@ case class Vikingo(nombre: String, caracteristicas: CaracteristicaCompetidor, it
   }
 
   //Punto 3
-  def mejorMontura(dragones: List[Dragon], posta: Posta): Option[Competidor]= {
+  def mejorMontura(dragones: List[Dragon], posta: Posta): Option[Competidor] = {
+
     if (posta.puedenParticipar(List(this)).isEmpty)
       throw new IllegalStateException("no puede participar en posta")
 
-    val dragonesPosibles = dragones.filter(d => d.puedeSerMontadoPor(this))
-    val monturasPosibles = this ::  dragonesPosibles.map(d => this.montar(d))
+    val dragonesPosibles = dragones.filter(_ puedeSerMontadoPor this)
+    val monturasPosibles = this :: dragonesPosibles.map(montar)
     monturasPosibles.sortWith(posta.criterioOrdenamiento).headOption
   }
 
@@ -106,6 +106,7 @@ case class Vikingo(nombre: String, caracteristicas: CaracteristicaCompetidor, it
   *   case Failure(e) => print(e.getMesage())
   * }
   * */
+
 }
 
 case class Jinete(vikingo: Vikingo, dragon: Dragon)
@@ -118,5 +119,3 @@ case class Jinete(vikingo: Vikingo, dragon: Dragon)
   def capacidadCarga = peso - dragon.capacidadCarga
 
 }
-
-

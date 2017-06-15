@@ -1,6 +1,6 @@
 import org.scalatest.{FlatSpec, Matchers}
 import torneoVikingos._
-import torneoVikingos.Posta2.Posta
+import torneoVikingos.Posta.{Posta, Requisito}
 
 class PostaSpec extends FlatSpec with Matchers {
 
@@ -13,23 +13,23 @@ class PostaSpec extends FlatSpec with Matchers {
   val bjorn = Vikingo("Bjorn", CaracteristicaCompetidor(peso=90, velocidad=90, barbarosidad= 140, hambre=90), Some(Arma(60)))
   val ivar = Vikingo("Ivar", CaracteristicaCompetidor(peso=80, velocidad=200, barbarosidad= 100, hambre=50), None)
 
-
   // Para abstraer el efecto en el hambre de las diferentes postas
   def efectoColateralEnPosta(porcentaje: Double): (Competidor => Competidor) =
 
     (c: Competidor) => {
       c match {
+        case Vikingo(_, _, Some(ItemComestible(hambreItem))) if c.esPatapez =>
+          Vikingo(nombre = c.getNombre, item = c.getItem, caracteristicas = c.aumentaHambre(2*porcentaje - hambreItem))
         case Vikingo(_nombre, _, _item) =>
           Vikingo(nombre = _nombre, item = _item, caracteristicas = c.aumentaHambre(porcentaje))
         case Jinete(_vikingo, _dragon) =>
-          Jinete(_vikingo.aumentaCaracteristicas(c.aumentaHambre(porcentaje)), dragon = _dragon)
+          Jinete(_vikingo.aumentaCaracteristicas(c.aumentaHambre(5)), dragon = _dragon) // Jinete incrementan 5% de hambre para toda posta
       }
-
   }
 
   // Pesca sin requisitos de admision, se ordenan por el que mas pescado levanta (50% peso + 2*barbarosidad) y les aumenta 5% el hambre a todos
   val pesca = Posta(
-    criterioOrdenamiento = (c1: Competidor, c2: Competidor) => c1.pescadoPuedeLevantar > c2.pescadoPuedeLevantar,
+    criterioOrdenamiento = (c1, c2) => c1.pescadoPuedeLevantar > c2.pescadoPuedeLevantar,
     efectoColateral = efectoColateralEnPosta(5)
   )
 
@@ -37,19 +37,31 @@ class PostaSpec extends FlatSpec with Matchers {
   val pescaConRequerimiento = Posta(
     criterioOrdenamiento = (c1, c2) => c1.pescadoPuedeLevantar > c2.pescadoPuedeLevantar,
     efectoColateral = efectoColateralEnPosta(5),
-    requisitosAdmision = List((c) => c.pescadoPuedeLevantar > 200)
+    requisitosAdmision = List(c => c.pescadoPuedeLevantar > 200)
   )
 
   // Posta combate, se ordenan por el que mas daño produce, luego aumenta 10% de hambre
+  // Debe tener al menos un grado de barbaridad mínimo o un arma equipada para participar de esta posta
+  val requisitoItemCombate: Requisito = c => c.getItem.contains(Arma(_))
+  val requisitoBarbarosidadCombate: Requisito = c => c.barbarosidad > 80
+
   val combate = Posta(
     criterioOrdenamiento = (c1,c2) => c1.danioTotal > c2.danioTotal,
-    efectoColateral = efectoColateralEnPosta(10)
+    efectoColateral = efectoColateralEnPosta(10),
+    requisitosAdmision = List(requisitoBarbarosidadCombate, requisitoItemCombate)
   )
 
   // Posta carrera de 10 km, se ordenan por el mas veloz, aumentan el hambre en base a los km de carrera
+  // Puede requerir que el participante necesite una montura
+  val requisitoMonturaCarrera: Requisito = c => c match {
+    case Jinete(_,_) => true
+    case _ => false
+  }
+
   val carrera = Posta(
     criterioOrdenamiento = (c1, c2) => c1.velocidad > c2.velocidad,
-    efectoColateral = efectoColateralEnPosta(10)
+    efectoColateral = efectoColateralEnPosta(10),
+    requisitosAdmision = List(requisitoMonturaCarrera)
   )
 
   "Cuando pregunte a la posta pesca quienes de los tres vikingos pueden participar" should

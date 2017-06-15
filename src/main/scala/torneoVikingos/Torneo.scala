@@ -1,5 +1,5 @@
 package torneoVikingos
-import torneoVikingos.Posta2.Posta
+import torneoVikingos.Posta.Posta
 import scala.util.{Try, Success, Failure}
 import torneoVikingos._
 

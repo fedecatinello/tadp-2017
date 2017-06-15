@@ -6,10 +6,12 @@ case class FuriaNocturna(danio: Double) extends EspecieDragon
 case object NadderMortífero extends EspecieDragon
 case class Gronckle(peso: Double) extends EspecieDragon
 
-case class Dragon(especie: EspecieDragon, velocidadBase: Double = 60, peso: Double,
-                  requisitos: List[(Vikingo) => Boolean] = List()) {
+case class Dragon(nombre: String, especie: EspecieDragon, velocidadBase: Double = 60, peso: Double,
+                  requisitos: List[Vikingo => Boolean] = Nil) {
 
   require(velocidadBase - peso > 0, "El peso no puede superar la velocidad base")
+
+  def barbarosidadMinimaParaMontar: Double = 100
 
   def velocidadInicial: Double = velocidadBase - peso
 
@@ -39,7 +41,9 @@ case class Dragon(especie: EspecieDragon, velocidadBase: Double = 60, peso: Doub
     especie match {
         case NadderMortífero => danio > vikingo.danioTotal
         case Gronckle(pesoSoporta) => pesoSoporta > vikingo.peso
-        case _ => true
+        case FuriaNocturna(_) if nombre == "Chimuelo" => vikingo.item.contains(SistemaDeVuelo)
+        case _ => vikingo.barbarosidad > barbarosidadMinimaParaMontar
     }
   }
+
 }
