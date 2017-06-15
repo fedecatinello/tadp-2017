@@ -112,21 +112,21 @@ case class Vikingo(nombre: String, caracteristicas: CaracteristicaCompetidor, it
 
   // TODO: Version Ivi y Fede
 
-  def mejorPerformance(dragones: List[Dragon], posta: Posta): Option[Competidor] = {
-
-    Try(posta.jugar(this :: dragones.map(montar))) match {
-      case Success(listaParticipantes) => listaParticipantes.headOption
-      case Failure(_) => None
-    }
-  }
-
-  def mejorMontura(dragones: List[Dragon], posta: Posta): Option[Dragon] = {
-
-    mejorPerformance(dragones, posta) match {
-      case Some(jinete@Jinete(_,_)) => Some(jinete.dragon)
-      case _ => None
-    }
-  }
+//  def mejorPerformance(dragones: List[Dragon], posta: Posta): Option[Competidor] = {
+//
+//    Try(posta.jugar(this :: dragones.map(montar))) match {
+//      case Success(listaParticipantes) => listaParticipantes.headOption
+//      case Failure(_) => None
+//    }
+//  }
+//
+//  def mejorMontura(dragones: List[Dragon], posta: Posta): Option[Dragon] = {
+//
+//    mejorPerformance(dragones, posta) match {
+//      case Some(jinete@Jinete(_,_)) => Some(jinete.dragon)
+//      case _ => None
+//    }
+//  }
 
 }
 
