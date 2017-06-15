@@ -14,10 +14,9 @@ object Posta {
 
     // El requerimiento fijo de todas las postas es que una vez terminada (luego de que se le aplique el
     // efecto colateral) el hambre del competidor no supere el 100.
-    val requisitoFijo: Requisito = c =>
-      c match {
-        case _ if c.esPatapez => c.hambre > 50
-        case _ => efectoColateral(c).hambre < 100
+    val requisitoFijo: Requisito = {
+        case c if c.esPatapez => c.hambre > 50
+        case c => efectoColateral(c).hambre < 100
     }
 
     // Recibe una lista de competidores y devuelve otra lista de vikingos

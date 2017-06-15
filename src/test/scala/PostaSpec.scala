@@ -53,7 +53,8 @@ class PostaSpec extends FlatSpec with Matchers {
 
   // Posta carrera de 10 km, se ordenan por el mas veloz, aumentan el hambre en base a los km de carrera
   // Puede requerir que el participante necesite una montura
-  val requisitoMonturaCarrera: Requisito = c => c match {
+  val requisitoMonturaCarrera: Requisito =
+  {
     case Jinete(_,_) => true
     case _ => false
   }

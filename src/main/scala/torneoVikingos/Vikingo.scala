@@ -45,7 +45,7 @@ abstract class Competidor(nombre: String, caracteristicas: CaracteristicaCompeti
   // Punto 2
   def esMejorQue(competidor: Competidor)(posta: Posta) : Boolean = {
     posta.ordenar(List(this, competidor)) match {
-      case Nil => return false // TODO: Preguntar ¿Si ninguno de los dos puede participar de la posta es false?
+      case Nil => return false
       case x :: _ => return x == this
     }
     true
@@ -60,24 +60,27 @@ case class Vikingo(nombre: String, caracteristicas: CaracteristicaCompetidor, it
     copy(caracteristicas = criterioAumento)
   }
 
-  // Punto 1 TODO: ver que onda el tema de Try aca (esto no implica puedeMontar(), sino que monta() y si no puede, rompe)
+  // Punto 1
   def montar(dragon: Dragon): Competidor = {
-    if(dragon.puedeSerMontadoPor(this))
+    if(dragon puedeSerMontadoPor this)
       Jinete(this, dragon)
     else
-      throw new IllegalStateException("no puede montar a este dragon")
+      throw new IllegalStateException("No puede montar a este dragon")
   }
 
   //Punto 3
-  def mejorMontura(dragones: List[Dragon], posta: Posta): Option[Competidor] = {
 
-    if (posta.puedenParticipar(List(this)).isEmpty)
-      throw new IllegalStateException("no puede participar en posta")
+  //TODO: Version de Nico Buzza
 
-    val dragonesPosibles = dragones.filter(_ puedeSerMontadoPor this)
-    val monturasPosibles = this :: dragonesPosibles.map(montar)
-    monturasPosibles.sortWith(posta.criterioOrdenamiento).headOption
-  }
+//  def mejorMontura(dragones: List[Dragon], posta: Posta): Option[Competidor] = {
+//
+//    if (posta.puedenParticipar(List(this)).isEmpty)
+//      throw new IllegalStateException("no puede participar en posta")
+//
+//    val dragonesPosibles = dragones.filter(_ puedeSerMontadoPor this)
+//    val monturasPosibles = this :: dragonesPosibles.map(montar)
+//    monturasPosibles.sortWith(posta.criterioOrdenamiento).headOption
+//  }
 
   // ME QUEDA LA DUDA SI EL METODO puedeSerMontadoPor ES VALIDO... SI NO LO ES, SE ME OCURRE
   // HACER ALGO COMO LO QUE ESTOY HACIENDO ABAJO... ME PARECE MUY TIRADO DE LOS PELOS
@@ -106,6 +109,24 @@ case class Vikingo(nombre: String, caracteristicas: CaracteristicaCompetidor, it
   *   case Failure(e) => print(e.getMesage())
   * }
   * */
+
+  // TODO: Version Ivi y Fede
+
+  def mejorPerformance(dragones: List[Dragon], posta: Posta): Option[Competidor] = {
+
+    Try(posta.jugar(this :: dragones.map(montar))) match {
+      case Success(listaParticipantes) => listaParticipantes.headOption
+      case Failure(_) => None
+    }
+  }
+
+  def mejorMontura(dragones: List[Dragon], posta: Posta): Option[Dragon] = {
+
+    mejorPerformance(dragones, posta) match {
+      case Some(jinete@Jinete(_,_)) => Some(jinete.dragon)
+      case _ => None
+    }
+  }
 
 }
 
