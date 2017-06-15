@@ -27,12 +27,27 @@ object Torneo {
     def jugarTorneo(): List[Competidor] = {
 
       val rdoParticipantes = postas.foldLeft(participantes){(acum, posta) =>
+
+        val participantesPosibles = posta.puedenParticipar(acum)
+        if (participantesPosibles.size == 0){
+          /* ... Si ninguno pueda entrar a una posta, entonces no hay ganador. */
+          List()
+        }
+
+        if (participantesPosibles.size == 1){
+          /*En caso de que las postas que conforman el torneo poseen un requisito para entrar a ella,
+           y solo califique uno, si el mismo supera la posta, será el ganador de la posta...*/
+          val reglasDeAprobParaPosta = reglasAprob(posta)
+          reglasDeAprobParaPosta(participantesPosibles)
+        }
+
         if (acum.size == 1){
+          /* Este participante ya gano porque es el ultimo de pie. */
           acum
         } else if (acum.size == 0) {
             /*
             * En caso de que en algún momento queden todos los participantes descalificados,
-             * no hay ganador y se finaliza el torneo.
+            * no hay ganador y se finaliza el torneo.
             * */
           List()
 
@@ -43,7 +58,7 @@ object Torneo {
         }
       }
 
-      if (rdoParticipantes.size == 1){
+      if (rdoParticipantes.size == 1 || rdoParticipantes.size == 0){
         /*
         * En caso de que quede solo un participante, este es el ganador del torneo y no se juegan
         * más postas, por lo que aunque exista una posta en la que no pueda participar no le
@@ -58,7 +73,6 @@ object Torneo {
         * */
       }
 
-      //TODO: En caso de que las postas que conforman el torneo poseen un requisito para entrar a ella, y solo califique uno, si el mismo supera la posta, será el ganador de la posta. Si ninguno pueda entrar a una posta, entonces no hay ganador.
       rdoParticipantes
     }
   }

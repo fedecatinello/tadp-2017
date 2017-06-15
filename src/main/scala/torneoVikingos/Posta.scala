@@ -41,10 +41,6 @@ object Posta {
         case Some(requisito :: otrosRequisitos) => puedenParticipar(participantes2.filter(requisito), Some(otrosRequisitos))
       }
     }
-
-
-
   }
-
 }
 

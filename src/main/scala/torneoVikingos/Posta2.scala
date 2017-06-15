@@ -35,7 +35,5 @@ object Posta2 {
     def ordenar(participantes: List[Competidor]): List[Competidor] = {
       puedenParticipar(participantes).sortWith(criterioOrdenamiento)
     }
-
   }
-
 }
