@@ -44,11 +44,19 @@ abstract class Competidor(nombre: String, caracteristicas: CaracteristicaCompeti
 
   // Punto 2
   def esMejorQue(competidor: Competidor)(posta: Posta) : Boolean = {
-    posta.ordenar(List(this, competidor)) match {
+    val participantesOrdenados = posta.ordenar(List(this, competidor))
+    participantesOrdenados match {
       case Nil => return false
       case x :: _ => return x == this
     }
     true
+  }
+
+  def tieneArma: Boolean = {
+    item match {
+      case Some(Arma(_)) => true
+      case _ => false
+    }
   }
 
 }
@@ -61,11 +69,23 @@ case class Vikingo(nombre: String, caracteristicas: CaracteristicaCompetidor, it
   }
 
   // Punto 1
-  def montar(dragon: Dragon): Competidor = {
+  def montar(dragon: Dragon): Jinete = {
     if(dragon puedeSerMontadoPor this)
       Jinete(this, dragon)
     else
       throw new IllegalStateException("No puede montar a este dragon")
+  }
+
+  // Punto 3 Nico F
+
+  def mejorMontura(dragones: List[Dragon], posta: Posta): Option[Dragon] = {
+    val dragonesQuePuedeMontar: List[Dragon] = dragones.filter(_ puedeSerMontadoPor this)
+    val posiblesMonturas: List[Jinete] = dragonesQuePuedeMontar.map(montar)
+
+    posta.ordenar(this :: posiblesMonturas).head match {
+      case Jinete(_, d) => Some(d)
+      case _ => None
+    }
   }
 
   //Punto 3

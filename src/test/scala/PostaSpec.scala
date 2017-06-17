@@ -5,13 +5,19 @@ import torneoVikingos.Posta.{Posta, Requisito}
 class PostaSpec extends FlatSpec with Matchers {
 
   // Algunos vikingos
-  val asger = Vikingo("Asger", CaracteristicaCompetidor(peso=100, velocidad=15, barbarosidad=50, hambre=30), Some(Arma(50)))
-  val arvid = Vikingo("Arvid", CaracteristicaCompetidor(peso=80, velocidad=30, barbarosidad=150, hambre=10), None)
-  val asmund = Vikingo("Asmund", CaracteristicaCompetidor(peso=250, velocidad=50, barbarosidad= 120, hambre=98), Some(Arma(50)))
+  val asger: Vikingo = Vikingo("Asger", CaracteristicaCompetidor(peso=100, velocidad=15, barbarosidad=50, hambre=30), Some(Arma(50)))
+  val arvid: Vikingo = Vikingo("Arvid", CaracteristicaCompetidor(peso=80, velocidad=30, barbarosidad=150, hambre=10), None)
+  val asmund: Vikingo = Vikingo("Asmund", CaracteristicaCompetidor(peso=250, velocidad=50, barbarosidad= 120, hambre=98), Some(Arma(50)))
 
-  val ragnar = Vikingo("Ragnar", CaracteristicaCompetidor(peso=150, velocidad=100, barbarosidad= 200, hambre=70), Some(Arma(100)))
-  val bjorn = Vikingo("Bjorn", CaracteristicaCompetidor(peso=90, velocidad=90, barbarosidad= 140, hambre=90), Some(Arma(60)))
-  val ivar = Vikingo("Ivar", CaracteristicaCompetidor(peso=80, velocidad=200, barbarosidad= 100, hambre=50), None)
+  val ragnar: Vikingo = Vikingo("Ragnar", CaracteristicaCompetidor(peso=150, velocidad=100, barbarosidad= 200, hambre=70), Some(Arma(100)))
+  val bjorn: Vikingo = Vikingo("Bjorn", CaracteristicaCompetidor(peso=90, velocidad=90, barbarosidad= 140, hambre=90), Some(Arma(60)))
+  val ivar: Vikingo = Vikingo("Ivar", CaracteristicaCompetidor(peso=80, velocidad=200, barbarosidad= 100, hambre=50), None)
+
+  // Algunos dragones
+
+  val d1: Dragon = Dragon("Sarasa", NadderMortífero, 75, 25)
+  val d2: Dragon = Dragon("Chispita", FuriaNocturna(100), 100, 15)
+  val d3: Dragon = Dragon("Aaa", Gronckle(100), 80, 75)
 
   // Para abstraer el efecto en el hambre de las diferentes postas
   def efectoColateralEnPosta(porcentaje: Double): (Competidor => Competidor) =
@@ -42,7 +48,7 @@ class PostaSpec extends FlatSpec with Matchers {
 
   // Posta combate, se ordenan por el que mas daño produce, luego aumenta 10% de hambre
   // Debe tener al menos un grado de barbaridad mínimo o un arma equipada para participar de esta posta
-  val requisitoItemCombate: Requisito = c => c.getItem.contains(Arma(_))
+  val requisitoItemCombate: Requisito = c => c.tieneArma
   val requisitoBarbarosidadCombate: Requisito = c => c.barbarosidad > 80
 
   val combate = Posta(
@@ -52,17 +58,10 @@ class PostaSpec extends FlatSpec with Matchers {
   )
 
   // Posta carrera de 10 km, se ordenan por el mas veloz, aumentan el hambre en base a los km de carrera
-  // Puede requerir que el participante necesite una montura
-  val requisitoMonturaCarrera: Requisito =
-  {
-    case Jinete(_,_) => true
-    case _ => false
-  }
 
   val carrera = Posta(
     criterioOrdenamiento = (c1, c2) => c1.velocidad > c2.velocidad,
-    efectoColateral = efectoColateralEnPosta(10),
-    requisitosAdmision = List(requisitoMonturaCarrera)
+    efectoColateral = efectoColateralEnPosta(10)
   )
 
   "Cuando pregunte a la posta pesca quienes de los tres vikingos pueden participar" should
@@ -77,10 +76,22 @@ class PostaSpec extends FlatSpec with Matchers {
     assert(puedenParticipar == List(arvid))
   }
 
+  "Cuando pregunte si ragnar y bjorn pueden participar de la posta combate" should
+    "devolver la lista con ambos porque los dos cumplen los requisitos de admision" in {
+    val puedenParticipar = combate.puedenParticipar(List(bjorn, ragnar))
+    assert(puedenParticipar == List(bjorn, ragnar))
+  }
+
   "Cuando pregunte si ragnar es mejor que bjorn en el combate" should
     "devolver true ya que ragnar produce mas daño" in {
     val comparacionCombate = ragnar.esMejorQue(bjorn)(combate)
     assert(comparacionCombate)
+  }
+
+  "Cuando pregunte quienes puede competir en carrera con Ivar y Bjorn" should
+    "devolver los dos porque ambos cumplen los requerimientos" in {
+    val puedenCorrer = carrera.puedenParticipar(List(bjorn, ivar))
+    assert(puedenCorrer == List(bjorn, ivar))
   }
 
   "Cuando pregunte si ivar es mejor que bjorn en la carrera" should
@@ -111,6 +122,12 @@ class PostaSpec extends FlatSpec with Matchers {
     "ivar tener 70 de hambre porque se aumento un 10% su valor anterior (50)" in {
     val losLothbrok = carrera.jugar(List(ivar,ragnar,bjorn))
     assert(losLothbrok.head.hambre == 55)
+  }
+
+  "Cuando pregunte la mejor montura para Ragnar en la posta carrera con los dragones d1, d2, y d3" should
+    "devolver d2 porque es el que lo hace mas rapido" in {
+    val mejorMontura = ragnar.mejorMontura(List(d1, d2, d3), carrera)
+    assert(mejorMontura.get == d2)
   }
 
 }
