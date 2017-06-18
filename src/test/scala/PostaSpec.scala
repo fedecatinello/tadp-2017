@@ -48,13 +48,12 @@ class PostaSpec extends FlatSpec with Matchers {
 
   // Posta combate, se ordenan por el que mas daño produce, luego aumenta 10% de hambre
   // Debe tener al menos un grado de barbaridad mínimo o un arma equipada para participar de esta posta
-  val requisitoItemCombate: Requisito = c => c.tieneArma
-  val requisitoBarbarosidadCombate: Requisito = c => c.barbarosidad > 80
+  val requisitoPostaCombate: Requisito = c => c.tieneArma || c.barbarosidad > 80
 
   val combate = Posta(
     criterioOrdenamiento = (c1,c2) => c1.danioTotal > c2.danioTotal,
     efectoColateral = efectoColateralEnPosta(10),
-    requisitosAdmision = List(requisitoBarbarosidadCombate, requisitoItemCombate)
+    requisitosAdmision = List(requisitoPostaCombate)
   )
 
   // Posta carrera de 10 km, se ordenan por el mas veloz, aumentan el hambre en base a los km de carrera
