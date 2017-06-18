@@ -49,7 +49,6 @@ abstract class Competidor(nombre: String, caracteristicas: CaracteristicaCompeti
       case Nil => return false
       case x :: _ => return x == this
     }
-    true
   }
 
   def tieneArma: Boolean = {
@@ -79,9 +78,9 @@ case class Vikingo(nombre: String, caracteristicas: CaracteristicaCompetidor, it
 
   def mejorMontura(dragones: List[Dragon], posta: Posta): Option[Dragon] = {
     val dragonesQuePuedeMontar: List[Dragon] = dragones.filter(_ puedeSerMontadoPor this)
-    val posiblesMonturas: List[Jinete] = dragonesQuePuedeMontar.map(montar)
+    val posibilidadesComoJinete: List[Jinete] = dragonesQuePuedeMontar.map(montar)
 
-    posta.ordenar(this :: posiblesMonturas).head match {
+    posta.ordenar(this :: posibilidadesComoJinete).head match {
       case Jinete(_, d) => Some(d)
       case _ => None
     }
