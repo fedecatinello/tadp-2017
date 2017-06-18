@@ -5,8 +5,17 @@ import torneoVikingos._
 
 object Torneo {
 
+  // TODO: PROPUESTA PARA PODER TENER EQUIPOS EN EL TORNEO
+//  case class  UnidadCompetidora[T](integrantes: List[T])// puede ser 1 vikingo o un EQUIPO de vikingos
+//
+//  case class ReglasTorneo(
+//                           preparacion: (List[UnidadCompetidora[Vikingo]], List[Dragon], Posta) => List[UnidadCompetidora[Competidor]],
+//                           clasificacion: List[UnidadCompetidora[Competidor]] => List[UnidadCompetidora[Vikingo]],
+//                           desempate: List[UnidadCompetidora[Vikingo]] => Vikingo
+//                         )
+
   case class ReglasTorneo(
-                          preparacion:  (List[Vikingo], List[Dragon], Posta) => List[Competidor],//((List[Vikingo], List[Dragon], Posta) => List[Competidor]),
+                          preparacion: (List[Vikingo], List[Dragon], Posta) => List[Competidor],
                           clasificacion: List[Competidor] => List[Vikingo],
                           desempate: List[Vikingo] => Vikingo
                          ) {}
