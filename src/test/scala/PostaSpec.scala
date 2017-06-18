@@ -1,6 +1,7 @@
 import org.scalatest.{FlatSpec, Matchers}
 import torneoVikingos._
 import torneoVikingos.Posta.{Posta, Requisito}
+import torneoVikingos.Torneo._
 
 class PostaSpec extends FlatSpec with Matchers {
 
@@ -61,6 +62,46 @@ class PostaSpec extends FlatSpec with Matchers {
   val carrera = Posta(
     criterioOrdenamiento = (c1, c2) => c1.velocidad > c2.velocidad,
     efectoColateral = efectoColateralEnPosta(10)
+  )
+
+  // TORNEOS
+
+  // Estandar
+
+  val preparacionEstandar: ReglaPreparacion = (vikingos, dragones, posta) => {
+    // Los participantes eligen el dragon que mejor les sirve para la posta en orden. Una vez que lo elige ya no esta
+    // disponible para los otros
+    var dragonesDisponibles = dragones
+    vikingos.map(v => {
+      v.mejorMontura(dragonesDisponibles, posta) match {
+        case Some(d) => {
+          dragonesDisponibles = dragonesDisponibles.filter(_d => _d != d) // Saco el dragon de la lista
+          v.montar(d)
+        }
+        case _ => v
+      }
+    })
+  }
+
+  val clasificacionEstandar: ReglaClasificacion = (c) => {
+    // Clasifica la mitad de los que mejor les fue, como ya vienen ordenados por jugar la posta, es la mitad de la izq
+    val (clasifican, _) = c.splitAt(c.length/2)
+    clasifican
+  }
+
+  val desempateEstandar: ReglaDesempate = c => c.head
+
+  val reglasEstandar = ReglasTorneo(
+    preparacionEstandar,
+    clasificacionEstandar,
+    desempateEstandar
+  )
+
+  val torneoEstandar = Torneo(
+    ???,
+    ???,
+    ???,
+    reglasEstandar
   )
 
   "Cuando pregunte a la posta pesca quienes de los tres vikingos pueden participar" should
