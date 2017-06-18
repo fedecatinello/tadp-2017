@@ -3,30 +3,10 @@ import torneoVikingos.Posta.Posta
 import scala.util.{Try, Success, Failure}
 import torneoVikingos._
 
-
-
 object Torneo {
 
-//  abstract class ReglasTorneo {
-//    def prepararParticipantes(vikingos: List[Vikingo], dragones: List[Dragon], posta: Posta): List[Competidor] = {
-//      Nil
-//    }
-//
-//    def pasanSiguienteRonda(competidores: List[Competidor]): List[Competidor] = {
-//      Nil
-//    }
-//
-//    def ganador(vikingo: List[Vikingo]): Vikingo = {
-//      ???
-//    }
-//  }
-//
-//  class Eliminacion extends  ReglasTorneo {
-//    override def ganador(vikingo: List[Vikingo]): Vikingo = super.ganador(vikingo)
-//  }
-
   case class ReglasTorneo(
-                          preparacion: (List[Vikingo], List[Dragon], Posta) => List[Competidor],
+                          preparacion:  (List[Vikingo], List[Dragon], Posta) => List[Competidor],//((List[Vikingo], List[Dragon], Posta) => List[Competidor]),
                           clasificacion: List[Competidor] => List[Vikingo],
                           desempate: List[Vikingo] => Vikingo
                          ) {}
@@ -41,15 +21,34 @@ object Torneo {
                    ) {
 
     def jugar: Option[Vikingo] = {
-      postas.foldLeft(participantes){
+      val sobrevivientes = postas.foldLeft(participantes){
         (clasificados: List[Vikingo], posta: Posta) => {
-          val participantesListos: List[Competidor] = reglasTorneo.preparacion(???, ???, ???)
 
+          /*En caso de que quede solo un participante, este es el
+          ganador del torneo y no se juegan más postas*/
+          if (clasificados.size == 1) {
+            clasificados
+          }
+
+          val participantesListos = reglasTorneo.preparacion(participantes, dragonesDisponibles, posta)
+          val participantesLuegoDePosta = posta.jugar(participantesListos)
+          val ganadores = reglasTorneo.clasificacion(participantesLuegoDePosta)
+          ganadores
         }
       }
-      None
+
+      sobrevivientes match {
+        case s if s.size == 0 => None
+        case s if s.size == 1 => Some(sobrevivientes.head)
+        case _ => Some(reglasTorneo.desempate(sobrevivientes))
+      }
+
+      //TODO: OTRA FORMA DE PATTERN MATCHING
+//      sobrevivientes match {
+//        case Nil => None
+//        case x :: Nil => Some(sobrevivientes.head)
+//        case xs => Some(reglasTorneo.desempate(xs))
+//      }
     }
-
   }
-
 }
