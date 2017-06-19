@@ -74,10 +74,9 @@ class PostaSpec extends FlatSpec with Matchers {
     var dragonesDisponibles = dragones
     vikingos.map(v => {
       v.mejorMontura(dragonesDisponibles, posta) match {
-        case Some(d) => {
-          dragonesDisponibles = dragonesDisponibles.filter(_d => _d != d) // Saco el dragon de la lista
+        case Some(d) =>
+          dragonesDisponibles = dragonesDisponibles.filter(_ != d) // Saco el dragon de la lista
           v.montar(d)
-        }
         case _ => v
       }
     })

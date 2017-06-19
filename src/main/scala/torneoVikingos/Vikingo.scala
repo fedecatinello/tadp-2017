@@ -74,7 +74,7 @@ case class Vikingo(nombre: String, caracteristicas: CaracteristicaCompetidor, it
       throw new IllegalStateException("No puede montar a este dragon")
   }
 
-  // Punto 3 Nico F
+  // Punto 3
 
   def mejorMontura(dragones: List[Dragon], posta: Posta): Option[Dragon] = {
     val dragonesQuePuedeMontar: List[Dragon] = dragones.filter(_ puedeSerMontadoPor this)
@@ -85,24 +85,6 @@ case class Vikingo(nombre: String, caracteristicas: CaracteristicaCompetidor, it
       case _ => None
     }
   }
-
-  // TODO: Version Ivi y Fede
-
-//  def mejorPerformance(dragones: List[Dragon], posta: Posta): Option[Competidor] = {
-//
-//    Try(posta.jugar(this :: dragones.map(montar))) match {
-//      case Success(listaParticipantes) => listaParticipantes.headOption
-//      case Failure(_) => None
-//    }
-//  }
-//
-//  def mejorMontura(dragones: List[Dragon], posta: Posta): Option[Dragon] = {
-//
-//    mejorPerformance(dragones, posta) match {
-//      case Some(jinete@Jinete(_,_)) => Some(jinete.dragon)
-//      case _ => None
-//    }
-//  }
 
 }
 

@@ -34,7 +34,7 @@ object Torneo {
     def desmontarCompetidores(competidores: List[Competidor]): List[Vikingo] = {
       competidores.map {
         case Jinete(v, _) => v
-        case Vikingo(n, caract, i) => Vikingo(n, caract, i)
+        case vik@Vikingo(_, _, _) => vik
       }
     }
 
@@ -52,7 +52,7 @@ object Torneo {
 
       sobrevivientes match {
         case Nil => None
-        case List(g) => Some(g) // Si hay un solo elemento en la lista es el ganador
+        case g :: Nil => Some(g) // Si hay un solo elemento en la lista es el ganador
         case _ => Some(reglasTorneo.desempate(sobrevivientes))
       }
 
