@@ -96,12 +96,12 @@ class PostaSpec extends FlatSpec with Matchers {
     desempateEstandar
   )
 
-  val torneoEstandar = Torneo(
+  /*val torneoEstandar = Torneo(
     ???,
     ???,
     ???,
     reglasEstandar
-  )
+  )*/
 
   "Cuando pregunte a la posta pesca quienes de los tres vikingos pueden participar" should
     "Devolver a asger y arvid porque asmud va a superar el 100% de hambre cuando termine la posta" in {

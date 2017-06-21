@@ -1,6 +1,8 @@
 package torneoVikingos
 import torneoVikingos.Posta.Posta
-import scala.util.{Try, Success, Failure}
+import torneoVikingos.Utils.ListVikingo
+
+import scala.util.{Failure, Success, Try}
 import torneoVikingos._
 
 object Torneo {
@@ -40,6 +42,14 @@ object Torneo {
 
     def jugar: Option[Vikingo] = {
 
+     val lista = participantes match {
+      case ListVikingo(_) => println("lista de vikingos")
+      case ListVikingo(x) :: xs => println("lista de listas")
+      case _ => throw new RuntimeException("No me cabe una")
+      }
+
+      //TODO: terminar
+
       // Los que pasen todas las postas (puede ser una lista vacia en ese caso ninguno supero todas las postas)
       val sobrevivientes: List[Vikingo] = postas.foldLeft(participantes) {
         (clasificados, posta) => {
@@ -57,38 +67,6 @@ object Torneo {
       }
 
     }
-
-//    def jugar: Option[Vikingo] = {
-//
-//      val sobrevivientes = postas.foldLeft(participantes){
-//        (clasificados: List[Vikingo], posta: Posta) => {
-//
-//          /*En caso de que quede solo un participante, este es el
-//          ganador del torneo y no se juegan más postas*/
-//          if (clasificados.size == 1) {
-//            clasificados
-//          }
-//
-//          val participantesListos = reglasTorneo.preparacion(participantes, dragonesDisponibles, posta)
-//          val participantesLuegoDePosta = posta.jugar(participantesListos)
-//          val ganadores = reglasTorneo.clasificacion(participantesLuegoDePosta)
-//          ganadores
-//        }
-//      }
-//
-//      sobrevivientes match {
-//        case s if s.size == 0 => None
-//        case s if s.size == 1 => Some(sobrevivientes.head)
-//        case _ => Some(reglasTorneo.desempate(sobrevivientes))
-//      }
-//
-//      //TODO: OTRA FORMA DE PATTERN MATCHING
-////      sobrevivientes match {
-////        case Nil => None
-////        case x :: Nil => Some(sobrevivientes.head)
-////        case xs => Some(reglasTorneo.desempate(xs))
-////      }
-//    }
 
   }
 }
