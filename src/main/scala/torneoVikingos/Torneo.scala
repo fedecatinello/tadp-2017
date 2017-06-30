@@ -23,7 +23,12 @@ object Torneo {
                           preparacion: ReglaPreparacion,
                           clasificacion: ReglaClasificacion,
                           desempate: ReglaDesempate
-                         ) {}
+                         )
+  {
+      def conPreparacion(nuevaRegla: ReglaPreparacion): ReglasTorneo = copy(preparacion = nuevaRegla)
+      def conClasificacion(nuevaRegla: ReglaClasificacion): ReglasTorneo = copy(clasificacion = nuevaRegla)
+      def conDesempate(nuevaRegla: ReglaDesempate): ReglasTorneo = copy(desempate = nuevaRegla)
+  }
 
   case class Torneo(
                      participantes: List[Vikingo],

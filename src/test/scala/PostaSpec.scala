@@ -64,30 +64,32 @@ class PostaSpec extends FlatSpec with Matchers {
     efectoColateral = efectoColateralEnPosta(10)
   )
 
-  // TORNEOS
+  /**
+    *   TORNEOS
+   **/
 
-  // Estandar
+  /** Estandar **/
 
+  // Los participantes eligen el dragon que mejor les sirve para la posta en orden.
+  // Una vez que lo elige ya no esta disponible para los otros
   val preparacionEstandar: ReglaPreparacion = (vikingos, dragones, posta) => {
-    // Los participantes eligen el dragon que mejor les sirve para la posta en orden.
-    // Una vez que lo elige ya no esta disponible para los otros
+
     var dragonesDisponibles = dragones
     vikingos.map(v => {
-      v.mejorMontura(dragonesDisponibles, posta) match {
+      v.mejorMontura(dragonesDisponibles, posta)() match {
         case Some(d) =>
           dragonesDisponibles = dragonesDisponibles.filter(_ != d) // Saco el dragon de la lista
           v.montar(d)
         case _ => v
       }
     })
+
   }
 
-  val clasificacionEstandar: ReglaClasificacion = listaCompetidores => {
-    // Clasifica la mitad de los que mejor les fue, como ya vienen ordenados por jugar la posta, es la mitad de la izq
-    val (clasifican, _) = listaCompetidores.splitAt(listaCompetidores.length/2)
-    clasifican
-  }
+  // Clasifica la mitad de los que mejor les fue, como ya vienen ordenados por jugar la posta, es la mitad de la izq
+  val clasificacionEstandar: ReglaClasificacion = competidores => competidores.take(competidores.length/2)
 
+  // Si quedan varios gana el que le haya ido mejor en la última
   val desempateEstandar: ReglaDesempate = _.head
 
   val reglasEstandar = ReglasTorneo(
@@ -104,49 +106,97 @@ class PostaSpec extends FlatSpec with Matchers {
   )
 
 
-  // Eliminacion
+  /** Eliminacion **/
 
-  //Eliminación: en vez de avanzar la mitad a la siguiente posta,
-  //avanzan todos excepto los últimos N, donde N se da en la regla.
+  // Avanzan todos excepto los últimos N, donde N se da en la regla.
   val clasificacionEliminacion: Int => ReglaClasificacion = numeroASacar => _ dropRight numeroASacar
-
-  val reglasEliminacion = ReglasTorneo(
-    preparacionEstandar,
-    clasificacionEliminacion(10),
-    desempateEstandar
-  )
 
   val torneoEliminacion = Torneo(
     ???,
     ???,
     ???,
-    reglasEliminacion
+    reglasEstandar.conClasificacion(clasificacionEliminacion(10))
   )
 
-  // Inverso TODO
 
-  // Veto TODO
+  /** Inverso **/
 
-  // Handicap TODO
+  // Avanza la mitad a la que peor le haya ido
+  val clasificacionInverso: ReglaClasificacion = competidores => competidores.drop(competidores.length/2)
 
+  // Si terminan varios gana el que haya salido en último lugar en la posta final.
+  val desempateInverso: ReglaDesempate = _.last
 
-  // Por equipos
+  val torneoInverso = Torneo(
+    ???,
+    ???,
+    ???,
+    reglasEstandar.conClasificacion(clasificacionInverso).conDesempate(desempateInverso)
+  )
+
+  /** Veto de Dragones **/
+
+  // De los dragones del torneo sólo están disponibles aquellos que cumplen cierta condición
+  val preparacionVeto: (Dragon => Boolean) => ReglaPreparacion = condicion => (vikingos, dragones, posta) => {
+
+    var dragonesDisponibles = dragones.filter(condicion)
+    vikingos.map(v => {
+      v.mejorMontura(dragonesDisponibles, posta)() match {
+        case Some(d) =>
+          dragonesDisponibles = dragonesDisponibles.filter(_ != d) // Saco el dragon de la lista
+          v.montar(d)
+        case _ => v
+      }
+    })
+
+  }
+
+  val torneoVeto = Torneo(
+    ???,
+    ???,
+    ???,
+    reglasEstandar.conPreparacion(preparacionVeto(_.especie == NadderMortífero))
+  )
+
+  /** Handicap **/
+
+  // Los jugadores eligen montura en el orden inverso (aquellos que les haya ido peor en la última posta)
+  val preparacionHandicap: ReglaPreparacion = (vikingos, dragones, posta) => {
+
+    var dragonesDisponibles = dragones
+    vikingos.map(v => {
+      v.mejorMontura(dragonesDisponibles, posta)(_.reverse.head) match {
+        case Some(d) =>
+          dragonesDisponibles = dragonesDisponibles.filter(_ != d) // Saco el dragon de la lista
+          v.montar(d)
+        case _ => v
+      }
+    })
+
+  }
+
+  val torneoHandicap = Torneo(
+    ???,
+    ???,
+    ???,
+    reglasEstandar.conPreparacion(preparacionHandicap)
+  )
+
+  /** Por equipos **/
 
   // La regla desempate de equipos devuelve un representante del equipo ganador
   val desempatePorEquipos: ReglaDesempate = _.groupBy(_ equipo).maxBy(_._2.length)._2.head
-
-  val reglasPorEquipos = ReglasTorneo(
-    preparacionEstandar,
-    clasificacionEstandar,
-    desempatePorEquipos
-  )
 
   val torneoPorEquipos = Torneo(
     ???,
     ???,
     ???,
-    reglasPorEquipos
+    reglasEstandar.conDesempate(desempatePorEquipos)
   )
+
+  /**
+    * TESTS
+    */
 
   "Cuando pregunte a la posta pesca quienes de los tres vikingos pueden participar" should
     "Devolver a asger y arvid porque asmud va a superar el 100% de hambre cuando termine la posta" in {
@@ -210,7 +260,7 @@ class PostaSpec extends FlatSpec with Matchers {
 
   "Cuando pregunte la mejor montura para Ragnar en la posta carrera con los dragones d1, d2, y d3" should
     "devolver d2 porque es el que lo hace mas rapido" in {
-    val mejorMontura = ragnar.mejorMontura(List(d1, d2, d3), carrera)
+    val mejorMontura = ragnar.mejorMontura(List(d1, d2, d3), carrera)()
     assert(mejorMontura.get == d2)
   }
 

@@ -35,8 +35,12 @@ object Posta {
     }
 
     // Como jugar pero no les aplica el efecto colateral, solo ordena a los que pueden participar
-    def ordenar(participantes: List[Competidor]): List[Competidor] = {
+    def ordenar(participantes: => List[Competidor]): List[Competidor] = {
       puedenParticipar(participantes).sortWith(criterioOrdenamiento)
     }
+
+    // Ordena a los participantes segun un criterio dado
+    def mejorPuntuacion(participantes: => List[Competidor])(criterio: List[Competidor] => Competidor): Competidor =
+      criterio(ordenar(participantes))
   }
 }
