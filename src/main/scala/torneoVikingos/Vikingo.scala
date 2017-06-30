@@ -1,13 +1,21 @@
 package torneoVikingos
 
 import torneoVikingos.Posta.Posta
-import scala.util.{Try, Success, Failure}
 
 sealed trait ItemCompetidor
 
 case class  Arma(danio: Double) extends ItemCompetidor
 case class  ItemComestible(porcentaje: Double) extends ItemCompetidor
 case object SistemaDeVuelo extends ItemCompetidor
+
+sealed trait Equipo
+
+case object EquipoRojo extends Equipo
+case object EquipoAzul extends Equipo
+case object EquipoVerde extends Equipo
+case object EquipoAmarillo extends Equipo
+case object EquipoBlanco extends Equipo
+
 
 case class CaracteristicaCompetidor(peso: Double, velocidad: Double, barbarosidad: Double, hambre: Double) {
   require(peso > 0)
@@ -46,8 +54,8 @@ abstract class Competidor(nombre: String, caracteristicas: CaracteristicaCompeti
   def esMejorQue(competidor: Competidor)(posta: Posta) : Boolean = {
     val participantesOrdenados = posta.ordenar(List(this, competidor))
     participantesOrdenados match {
-      case Nil => return false
-      case x :: _ => return x == this
+      case Nil => false
+      case x :: _ => x == this
     }
   }
 
@@ -59,7 +67,12 @@ abstract class Competidor(nombre: String, caracteristicas: CaracteristicaCompeti
   }
 }
 
-case class Vikingo(nombre: String, caracteristicas: CaracteristicaCompetidor, item: Option[ItemCompetidor] = None)
+case class Vikingo(
+                    nombre: String,
+                    caracteristicas: CaracteristicaCompetidor,
+                    item: Option[ItemCompetidor] = None,
+                    equipo: Option[Equipo] = None
+                  )
   extends Competidor(nombre, caracteristicas, item) {
 
   def aumentaCaracteristicas(criterioAumento: => CaracteristicaCompetidor): Vikingo = {

@@ -1,13 +1,12 @@
 package torneoVikingos
 import torneoVikingos.Posta.Posta
-import torneoVikingos.Utils.ListVikingo
 
 import scala.util.{Failure, Success, Try}
 import torneoVikingos._
 
 object Torneo {
 
-  // TODO: PROPUESTA PARA PODER TENER EQUIPOS EN EL TORNEO
+  // TODO: PROPUESTA PARA PODER TENER EQUIPOS EN EL TORNEO (BUZZA TKB)
 //  case class  UnidadCompetidora[T](integrantes: List[T])// puede ser 1 vikingo o un EQUIPO de vikingos
 //
 //  case class ReglasTorneo(
@@ -36,19 +35,11 @@ object Torneo {
     def desmontarCompetidores(competidores: List[Competidor]): List[Vikingo] = {
       competidores.map {
         case Jinete(v, _) => v
-        case vik@Vikingo(_, _, _) => vik
+        case vik@Vikingo(_, _, _, _) => vik
       }
     }
 
     def jugar: Option[Vikingo] = {
-
-     val lista = participantes match {
-      case ListVikingo(_) => println("lista de vikingos")
-      case ListVikingo(x) :: xs => println("lista de listas")
-      case _ => throw new RuntimeException("No me cabe una")
-      }
-
-      //TODO: terminar
 
       // Los que pasen todas las postas (puede ser una lista vacia en ese caso ninguno supero todas las postas)
       val sobrevivientes: List[Vikingo] = postas.foldLeft(participantes) {

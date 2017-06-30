@@ -25,9 +25,9 @@ class PostaSpec extends FlatSpec with Matchers {
 
     (c: Competidor) => {
       c match {
-        case Vikingo(_, _, Some(ItemComestible(hambreItem))) if c.esPatapez =>
+        case Vikingo(_, _, Some(ItemComestible(hambreItem)), _) if c.esPatapez =>
           Vikingo(nombre = c.getNombre, item = c.getItem, caracteristicas = c.aumentaHambre(2*porcentaje - hambreItem))
-        case Vikingo(_nombre, _, _item) =>
+        case Vikingo(_nombre, _, _item, _) =>
           Vikingo(nombre = _nombre, item = _item, caracteristicas = c.aumentaHambre(porcentaje))
         case Jinete(_vikingo, _dragon) =>
           Jinete(_vikingo.aumentaCaracteristicas(c.aumentaHambre(5)), dragon = _dragon) // Jinete incrementan 5% de hambre para toda posta
@@ -69,8 +69,8 @@ class PostaSpec extends FlatSpec with Matchers {
   // Estandar
 
   val preparacionEstandar: ReglaPreparacion = (vikingos, dragones, posta) => {
-    // Los participantes eligen el dragon que mejor les sirve para la posta en orden. Una vez que lo elige ya no esta
-    // disponible para los otros
+    // Los participantes eligen el dragon que mejor les sirve para la posta en orden.
+    // Una vez que lo elige ya no esta disponible para los otros
     var dragonesDisponibles = dragones
     vikingos.map(v => {
       v.mejorMontura(dragonesDisponibles, posta) match {
@@ -82,13 +82,13 @@ class PostaSpec extends FlatSpec with Matchers {
     })
   }
 
-  val clasificacionEstandar: ReglaClasificacion = (c) => {
+  val clasificacionEstandar: ReglaClasificacion = listaCompetidores => {
     // Clasifica la mitad de los que mejor les fue, como ya vienen ordenados por jugar la posta, es la mitad de la izq
-    val (clasifican, _) = c.splitAt(c.length/2)
+    val (clasifican, _) = listaCompetidores.splitAt(listaCompetidores.length/2)
     clasifican
   }
 
-  val desempateEstandar: ReglaDesempate = c => c.head
+  val desempateEstandar: ReglaDesempate = _.head
 
   val reglasEstandar = ReglasTorneo(
     preparacionEstandar,
@@ -96,12 +96,57 @@ class PostaSpec extends FlatSpec with Matchers {
     desempateEstandar
   )
 
-  /*val torneoEstandar = Torneo(
+  val torneoEstandar = Torneo(
     ???,
     ???,
     ???,
     reglasEstandar
-  )*/
+  )
+
+
+  // Eliminacion
+
+  //Eliminación: en vez de avanzar la mitad a la siguiente posta,
+  //avanzan todos excepto los últimos N, donde N se da en la regla.
+  val clasificacionEliminacion: Int => ReglaClasificacion = numeroASacar => _ dropRight numeroASacar
+
+  val reglasEliminacion = ReglasTorneo(
+    preparacionEstandar,
+    clasificacionEliminacion(10),
+    desempateEstandar
+  )
+
+  val torneoEliminacion = Torneo(
+    ???,
+    ???,
+    ???,
+    reglasEliminacion
+  )
+
+  // Inverso TODO
+
+  // Veto TODO
+
+  // Handicap TODO
+
+
+  // Por equipos
+
+  // La regla desempate de equipos devuelve un representante del equipo ganador
+  val desempatePorEquipos: ReglaDesempate = _.groupBy(_ equipo).maxBy(_._2.length)._2.head
+
+  val reglasPorEquipos = ReglasTorneo(
+    preparacionEstandar,
+    clasificacionEstandar,
+    desempatePorEquipos
+  )
+
+  val torneoPorEquipos = Torneo(
+    ???,
+    ???,
+    ???,
+    reglasPorEquipos
+  )
 
   "Cuando pregunte a la posta pesca quienes de los tres vikingos pueden participar" should
     "Devolver a asger y arvid porque asmud va a superar el 100% de hambre cuando termine la posta" in {
