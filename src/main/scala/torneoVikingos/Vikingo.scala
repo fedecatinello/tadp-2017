@@ -10,17 +10,17 @@ case class ItemComestible(porcentaje: Double) extends ItemCompetidor
 
 case object SistemaDeVuelo extends ItemCompetidor
 
-sealed trait Equipo
-
-case object EquipoRojo extends Equipo
-
-case object EquipoAzul extends Equipo
-
-case object EquipoVerde extends Equipo
-
-case object EquipoAmarillo extends Equipo
-
-case object EquipoBlanco extends Equipo
+//sealed trait Equipo
+//
+//case object EquipoRojo extends Equipo
+//
+//case object EquipoAzul extends Equipo
+//
+//case object EquipoVerde extends Equipo
+//
+//case object EquipoAmarillo extends Equipo
+//
+//case object EquipoBlanco extends Equipo
 
 
 case class CaracteristicaCompetidor(peso: Double, velocidad: Double, barbarosidad: Double, hambre: Double) {
@@ -83,13 +83,17 @@ abstract class Competidor(
   }
 }
 
+case class Equipo(
+                   nombre: String,
+                   participantes: List[Vikingo]
+                 ) extends Participante{}
+
 case class Vikingo(
                     nombre: String,
                     caracteristicas: CaracteristicaCompetidor,
-                    item: Option[ItemCompetidor] = None,
-                    equipo: Option[Equipo] = None
+                    item: Option[ItemCompetidor] = None
                   )
-  extends Competidor(nombre, caracteristicas, item) {
+  extends Competidor(nombre, caracteristicas, item) with Participante {
 
   def aumentaCaracteristicas(criterioAumento: => CaracteristicaCompetidor): Vikingo = {
     copy(caracteristicas = criterioAumento)
@@ -133,3 +137,5 @@ case class Jinete(vikingo: Vikingo, dragon: Dragon)
   def capacidadCarga = peso - dragon.capacidadCarga
 
 }
+
+trait Participante

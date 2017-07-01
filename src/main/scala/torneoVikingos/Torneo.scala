@@ -31,7 +31,7 @@ object Torneo {
   }
 
   case class Torneo(
-                     participantes: List[Vikingo],
+                     participantes: List[Participante],
                      postas: List[Posta],
                      dragonesDisponibles: List[Dragon],
                      reglasTorneo: ReglasTorneo
@@ -40,28 +40,50 @@ object Torneo {
     def desmontarCompetidores(competidores: List[Competidor]): List[Vikingo] = {
       competidores.map {
         case Jinete(v, _) => v
-        case vik@Vikingo(_, _, _, _) => vik
+        case vik@Vikingo(_, _, _) => vik
       }
     }
 
-    def jugar: Option[Vikingo] = {
+    def reagruparEquipos(vikingos: List[Vikingo]): List[Equipo] = {
+      val originales = participantes
+      Nil
+    }
+
+    def jugar: Option[Participante] = {
+
+      val _participantes: List[Vikingo] = participantes.flatMap(p => {
+        p match {
+          case Equipo(_, listaParticipantes) => listaParticipantes
+          case v@Vikingo(_, _, _) => List(v)
+        }
+      })
 
       // Los que pasen todas las postas (puede ser una lista vacia en ese caso ninguno supero todas las postas)
-      val sobrevivientes: List[Vikingo] = postas.foldLeft(participantes) {
+      val sobrevivientes: List[Vikingo] = postas.foldLeft(_participantes) {
         (clasificados, posta) => {
+
           val competidores = reglasTorneo.preparacion(clasificados, dragonesDisponibles, posta)
           val competidoresOrdenados = posta.jugar(competidores)
           val ganadoresDeLaPosta = reglasTorneo.clasificacion(competidoresOrdenados)
           desmontarCompetidores(ganadoresDeLaPosta)
+
         }
       }
 
-      sobrevivientes match {
-        case Nil => None
-        case g :: Nil => Some(g) // Si hay un solo elemento en la lista es el ganador
-        case _ => Some(reglasTorneo.desempate(sobrevivientes))
-      }
+      // Si estaba jugando con equipos
 
+
+      // Si no
+
+      // Sobrevivientes es una lista de vikingos, si es un torneo de equipos tengo que volver a formar los equipos
+      // si no era equipos va esto como antes:
+//      sobrevivientes match {
+//        case Nil => None
+//        case g :: Nil => Some(g) // Si hay un solo elemento en la lista es el ganador
+//        case _ => Some(reglasTorneo.desempate(sobrevivientes))
+//      }
+
+      None
     }
 
   }

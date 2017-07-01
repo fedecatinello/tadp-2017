@@ -1,7 +1,7 @@
 import org.scalatest.{FlatSpec, Matchers}
 import torneoVikingos._
-import torneoVikingos.Posta.{Posta, Requisito}
-import torneoVikingos.Torneo._
+//import torneoVikingos.Posta.{Posta, Requisito}
+//import torneoVikingos.Torneo._
 
 class PostaSpec extends FlatSpec with Matchers {
 
@@ -25,9 +25,9 @@ class PostaSpec extends FlatSpec with Matchers {
 
     (c: Competidor) => {
       c match {
-        case Vikingo(_, _, Some(ItemComestible(hambreItem)), _) if c.esPatapez =>
+        case Vikingo(_, _, Some(ItemComestible(hambreItem))) if c.esPatapez =>
           Vikingo(nombre = c.getNombre, item = c.getItem, caracteristicas = c.aumentaHambre(2*porcentaje - hambreItem))
-        case Vikingo(_nombre, _, _item, _) =>
+        case Vikingo(_nombre, _, _item) =>
           Vikingo(nombre = _nombre, item = _item, caracteristicas = c.aumentaHambre(porcentaje))
         case Jinete(_vikingo, _dragon) =>
           Jinete(_vikingo.aumentaCaracteristicas(c.aumentaHambre(5)), dragon = _dragon) // Jinete incrementan 5% de hambre para toda posta
@@ -180,18 +180,6 @@ class PostaSpec extends FlatSpec with Matchers {
     ???,
     ???,
     reglasEstandar.conPreparacion(preparacionHandicap)
-  )
-
-  /** Por equipos **/
-
-  // La regla desempate de equipos devuelve un representante del equipo ganador
-  val desempatePorEquipos: ReglaDesempate = _.groupBy(_ equipo).maxBy(_._2.length)._2.head
-
-  val torneoPorEquipos = Torneo(
-    ???,
-    ???,
-    ???,
-    reglasEstandar.conDesempate(desempatePorEquipos)
   )
 
   /**
