@@ -45,8 +45,9 @@ object Torneo {
     }
 
     def reagruparEquipos(vikingos: List[Vikingo]): List[Equipo] = {
-      val originales = participantes
-      Nil
+      val originales = participantes // Tengo los originales y recibo la lista de vikingos asi que puedo volver a formar los grupos
+
+      Nil // TODO: Borrar es solo para que tipe
     }
 
     def jugar: Option[Participante] = {
@@ -62,11 +63,15 @@ object Torneo {
       val sobrevivientes: List[Vikingo] = postas.foldLeft(_participantes) {
         (clasificados, posta) => {
 
-          val competidores = reglasTorneo.preparacion(clasificados, dragonesDisponibles, posta)
-          val competidoresOrdenados = posta.jugar(competidores)
-          val ganadoresDeLaPosta = reglasTorneo.clasificacion(competidoresOrdenados)
-          desmontarCompetidores(ganadoresDeLaPosta)
-
+          clasificados match {
+            case ganador :: Nil => List(ganador)
+            case x :: xs => {
+              val competidores = reglasTorneo.preparacion(clasificados, dragonesDisponibles, posta)
+              val competidoresOrdenados = posta.jugar(competidores)
+              val ganadoresDeLaPosta = reglasTorneo.clasificacion(competidoresOrdenados)
+              desmontarCompetidores(ganadoresDeLaPosta)
+            }
+          }
         }
       }
 
@@ -83,7 +88,7 @@ object Torneo {
 //        case _ => Some(reglasTorneo.desempate(sobrevivientes))
 //      }
 
-      None
+      None // TODO: Borrar es solo para que tipe
     }
 
   }
