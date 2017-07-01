@@ -40,19 +40,23 @@ object Torneo {
     def desmontarCompetidores(competidores: List[Competidor]): List[Vikingo] = {
       competidores.map {
         case Jinete(v, _) => v
-        case vik@Vikingo(_, _, _, _) => vik
+        case vik:Vikingo => vik
       }
     }
 
     def jugar: Option[Vikingo] = {
 
-      // Los que pasen todas las postas (puede ser una lista vacia en ese caso ninguno supero todas las postas)
+      // Mientras haya mas de un participante se sigue jugando
       val sobrevivientes: List[Vikingo] = postas.foldLeft(participantes) {
         (clasificados, posta) => {
-          val competidores = reglasTorneo.preparacion(clasificados, dragonesDisponibles, posta)
-          val competidoresOrdenados = posta.jugar(competidores)
-          val ganadoresDeLaPosta = reglasTorneo.clasificacion(competidoresOrdenados)
-          desmontarCompetidores(ganadoresDeLaPosta)
+          clasificados match {
+            case ganador :: Nil => List(ganador)
+            case x :: xs =>
+              val competidores = reglasTorneo.preparacion(x :: xs, dragonesDisponibles, posta)
+              val competidoresOrdenados = posta.jugar(competidores)
+              var ganadoresDeLaPosta = reglasTorneo.clasificacion(competidoresOrdenados)
+              desmontarCompetidores(ganadoresDeLaPosta)
+          }
         }
       }
 
