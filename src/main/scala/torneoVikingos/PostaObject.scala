@@ -1,6 +1,6 @@
 package torneoVikingos
 
-object Posta {
+object PostaObject {
 
   type Requisito = Competidor => Boolean
   type CriterioOrdenamiento = (Competidor, Competidor) => Boolean
@@ -40,7 +40,7 @@ object Posta {
     }
 
     // Ordena a los participantes segun un criterio dado
-    def mejorPuntuacion(participantes: => List[Competidor])(criterio: List[Competidor] => Competidor): Competidor =
-      criterio(ordenar(participantes))
-  }
+    def mejorPuntuacion(participantes: List[Competidor])(criterio: List[Competidor] => Option[Competidor]): Option[Competidor] =
+       criterio(ordenar(participantes))
+    }
 }

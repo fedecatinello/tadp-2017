@@ -1,6 +1,6 @@
 package torneoVikingos
 
-import torneoVikingos.Posta.Posta
+import torneoVikingos.PostaObject.Posta
 
 sealed trait ItemCompetidor
 
@@ -110,16 +110,20 @@ case class Vikingo(
 
   /** Punto 3 **/
 
-  // El criterio por defecto para mejorMontura es el que mejor puntuaría en una posta
+  // El criterio por defecto para mejorMontura es el que mejor puntuaría en una posta en caso de una lista no vacia
+  val criterioPorDefecto: List[Competidor] => Option[Competidor] = {
+    case Nil => None
+    case x :: _ => Some(x)
+  }
 
-  def mejorMontura(dragones: List[Dragon], posta: Posta)(criterioPuntuacion: List[Competidor] => Competidor = _.head)
+  def mejorMontura(dragones: List[Dragon], posta: Posta)(criterioPuntuacion: List[Competidor] => Option[Competidor] = criterioPorDefecto)
   : Option[Dragon] = {
 
     val dragonesQuePuedeMontar: List[Dragon] = dragones.filter(_ puedeSerMontadoPor this)
     val posibilidadesComoJinete: List[Jinete] = dragonesQuePuedeMontar.map(montar)
 
     posta.mejorPuntuacion(this :: posibilidadesComoJinete)(criterioPuntuacion) match {
-      case Jinete(_, d) => Some(d)
+      case Some(Jinete(_, d)) => Some(d)
       case _ => None
     }
 

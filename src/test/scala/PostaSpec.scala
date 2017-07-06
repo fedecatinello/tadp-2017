@@ -1,18 +1,18 @@
 import org.scalatest.{FlatSpec, Matchers}
 import torneoVikingos._
-//import torneoVikingos.Posta.{Posta, Requisito}
-//import torneoVikingos.Torneo._
+import torneoVikingos.PostaObject.{Posta, Requisito}
+import torneoVikingos.TorneoObject._
 
 class PostaSpec extends FlatSpec with Matchers {
 
   // Algunos vikingos
-  val asger: Vikingo = Vikingo("Asger", CaracteristicaCompetidor(peso=100, velocidad=15, barbarosidad=50, hambre=30), Some(Arma(50)))
-  val arvid: Vikingo = Vikingo("Arvid", CaracteristicaCompetidor(peso=80, velocidad=30, barbarosidad=150, hambre=10), None)
-  val asmund: Vikingo = Vikingo("Asmund", CaracteristicaCompetidor(peso=250, velocidad=50, barbarosidad= 120, hambre=98), Some(Arma(50)))
+  val asger: Vikingo = Vikingo("Asger", CaracteristicaCompetidor(peso = 100, velocidad = 15, barbarosidad = 50, hambre = 30), Some(Arma(50)))
+  val arvid: Vikingo = Vikingo("Arvid", CaracteristicaCompetidor(peso = 80, velocidad = 30, barbarosidad = 150, hambre = 10), None)
+  val asmund: Vikingo = Vikingo("Asmund", CaracteristicaCompetidor(peso = 250, velocidad = 50, barbarosidad = 120, hambre = 98), Some(Arma(50)))
 
-  val ragnar: Vikingo = Vikingo("Ragnar", CaracteristicaCompetidor(peso=150, velocidad=100, barbarosidad= 200, hambre=70), Some(Arma(100)))
-  val bjorn: Vikingo = Vikingo("Bjorn", CaracteristicaCompetidor(peso=90, velocidad=90, barbarosidad= 140, hambre=90), Some(Arma(60)))
-  val ivar: Vikingo = Vikingo("Ivar", CaracteristicaCompetidor(peso=80, velocidad=200, barbarosidad= 100, hambre=50), None)
+  val ragnar: Vikingo = Vikingo("Ragnar", CaracteristicaCompetidor(peso = 150, velocidad = 100, barbarosidad = 200, hambre = 70), Some(Arma(100)))
+  val bjorn: Vikingo = Vikingo("Bjorn", CaracteristicaCompetidor(peso = 90, velocidad = 90, barbarosidad = 140, hambre = 90), Some(Arma(60)))
+  val ivar: Vikingo = Vikingo("Ivar", CaracteristicaCompetidor(peso = 80, velocidad = 200, barbarosidad = 100, hambre = 50), None)
 
   // Algunos dragones
 
@@ -26,13 +26,13 @@ class PostaSpec extends FlatSpec with Matchers {
     (c: Competidor) => {
       c match {
         case Vikingo(_, _, Some(ItemComestible(hambreItem))) if c.esPatapez =>
-          Vikingo(nombre = c.getNombre, item = c.getItem, caracteristicas = c.aumentaHambre(2*porcentaje - hambreItem))
+          Vikingo(nombre = c.getNombre, item = c.getItem, caracteristicas = c.aumentaHambre(2 * porcentaje - hambreItem))
         case Vikingo(_nombre, _, _item) =>
           Vikingo(nombre = _nombre, item = _item, caracteristicas = c.aumentaHambre(porcentaje))
         case Jinete(_vikingo, _dragon) =>
           Jinete(_vikingo.aumentaCaracteristicas(c.aumentaHambre(5)), dragon = _dragon) // Jinete incrementan 5% de hambre para toda posta
       }
-  }
+    }
 
   // Pesca sin requisitos de admision, se ordenan por el que mas pescado levanta (50% peso + 2*barbarosidad) y les aumenta 5% el hambre a todos
   val pesca = Posta(
@@ -52,7 +52,7 @@ class PostaSpec extends FlatSpec with Matchers {
   val requisitoPostaCombate: Requisito = c => c.tieneArma || c.barbarosidad > 80
 
   val combate = Posta(
-    criterioOrdenamiento = (c1,c2) => c1.danioTotal > c2.danioTotal,
+    criterioOrdenamiento = (c1, c2) => c1.danioTotal > c2.danioTotal,
     efectoColateral = efectoColateralEnPosta(10),
     requisitosAdmision = List(requisitoPostaCombate)
   )
@@ -65,8 +65,8 @@ class PostaSpec extends FlatSpec with Matchers {
   )
 
   /**
-    *   TORNEOS
-   **/
+    * TORNEOS
+    **/
 
   /** Estandar **/
 
@@ -87,7 +87,7 @@ class PostaSpec extends FlatSpec with Matchers {
   }
 
   // Clasifica la mitad de los que mejor les fue, como ya vienen ordenados por jugar la posta, es la mitad de la izq
-  val clasificacionEstandar: ReglaClasificacion = competidores => competidores.take(competidores.length/2)
+  val clasificacionEstandar: ReglaClasificacion = competidores => competidores.take(competidores.length / 2)
 
   // Si quedan varios gana el que le haya ido mejor en la última
   val desempateEstandar: ReglaDesempate = _.head
@@ -99,9 +99,9 @@ class PostaSpec extends FlatSpec with Matchers {
   )
 
   val torneoEstandar = Torneo(
-    ???,
-    ???,
-    ???,
+    List(asger, arvid, asmund, ragnar, bjorn, ivar),
+    List(combate),
+    List(d1, d2, d3),
     reglasEstandar
   )
 
@@ -112,9 +112,9 @@ class PostaSpec extends FlatSpec with Matchers {
   val clasificacionEliminacion: Int => ReglaClasificacion = numeroASacar => _ dropRight numeroASacar
 
   val torneoEliminacion = Torneo(
-    ???,
-    ???,
-    ???,
+    List(asger, arvid, asmund, ragnar, bjorn, ivar),
+    List(carrera, pescaConRequerimiento, pesca, combate),
+    List(d1, d2, d3),
     reglasEstandar.conClasificacion(clasificacionEliminacion(10))
   )
 
@@ -122,15 +122,15 @@ class PostaSpec extends FlatSpec with Matchers {
   /** Inverso **/
 
   // Avanza la mitad a la que peor le haya ido
-  val clasificacionInverso: ReglaClasificacion = competidores => competidores.drop(competidores.length/2)
+  val clasificacionInverso: ReglaClasificacion = competidores => competidores.drop(competidores.length / 2)
 
   // Si terminan varios gana el que haya salido en último lugar en la posta final.
   val desempateInverso: ReglaDesempate = _.last
 
   val torneoInverso = Torneo(
-    ???,
-    ???,
-    ???,
+    List(asger, arvid, asmund, ragnar, bjorn, ivar),
+    List(carrera, pescaConRequerimiento, pesca, combate),
+    List(d1, d2, d3),
     reglasEstandar.conClasificacion(clasificacionInverso).conDesempate(desempateInverso)
   )
 
@@ -152,9 +152,9 @@ class PostaSpec extends FlatSpec with Matchers {
   }
 
   val torneoVeto = Torneo(
-    ???,
-    ???,
-    ???,
+    List(asger, arvid, asmund, ragnar, bjorn, ivar),
+    List(carrera, pescaConRequerimiento, pesca, combate),
+    List(d1, d2, d3),
     reglasEstandar.conPreparacion(preparacionVeto(_.especie == NadderMortífero))
   )
 
@@ -165,7 +165,7 @@ class PostaSpec extends FlatSpec with Matchers {
 
     var dragonesDisponibles = dragones
     vikingos.map(v => {
-      v.mejorMontura(dragonesDisponibles, posta)(_.reverse.head) match {
+      v.mejorMontura(dragonesDisponibles, posta)(_.reverse.headOption) match {
         case Some(d) =>
           dragonesDisponibles = dragonesDisponibles.filter(_ != d) // Saco el dragon de la lista
           v.montar(d)
@@ -176,10 +176,24 @@ class PostaSpec extends FlatSpec with Matchers {
   }
 
   val torneoHandicap = Torneo(
-    ???,
-    ???,
-    ???,
+    List(asger, arvid, asmund, ragnar, bjorn, ivar),
+    List(carrera, pescaConRequerimiento, pesca, combate),
+    List(d1, d2, d3),
     reglasEstandar.conPreparacion(preparacionHandicap)
+  )
+
+  /** Por equipos **/
+
+  val desempatePorEquipos: ReglaDesempate = {
+    case equipos: List[Equipo] => equipos.maxBy(_.participantes.size)
+    case _ => throw new RuntimeException("Se esperaba lista de equipos")
+  }
+
+  val torneoPorEquipos = Torneo(
+    List(asger, arvid, asmund, ragnar, bjorn, ivar),
+    List(carrera, pescaConRequerimiento, pesca, combate),
+    List(d1, d2, d3),
+    reglasEstandar.conDesempate(desempatePorEquipos)
   )
 
   /**
@@ -236,13 +250,13 @@ class PostaSpec extends FlatSpec with Matchers {
 
   "Cuando haga jugar la posta combate" should
     "ragnar tener 77 de hambre porque se aumento un 10% su valor anterior (70)" in {
-    val losLothbrok = combate.jugar(List(ragnar,ivar,bjorn))
+    val losLothbrok = combate.jugar(List(ragnar, ivar, bjorn))
     assert(losLothbrok.head.hambre == 77)
   }
 
   "Cuando haga jugar la posta combate" should
     "ivar tener 70 de hambre porque se aumento un 10% su valor anterior (50)" in {
-    val losLothbrok = carrera.jugar(List(ivar,ragnar,bjorn))
+    val losLothbrok = carrera.jugar(List(ivar, ragnar, bjorn))
     assert(losLothbrok.head.hambre == 55)
   }
 
@@ -251,5 +265,34 @@ class PostaSpec extends FlatSpec with Matchers {
     val mejorMontura = ragnar.mejorMontura(List(d1, d2, d3), carrera)()
     assert(mejorMontura.get == d2)
   }
+
+  "Cuando se juege un torneo estandar con los parametros seteados anteriormente" should
+    "devolver a Arvid" in {
+
+    val participanteGanadorEstandar = torneoEstandar.jugar.get.asInstanceOf[Vikingo]
+    participanteGanadorEstandar.nombre.shouldEqual("Arvid")
+
+  }
+
+//  "Cuando se juege un torneo estandar con los parametros seteados anteriormente" should
+//    "devolver a alguien que no sabemos todavia"
+//
+//    torneoInverso.jugar.shouldEqual(None)
+//
+//  "Cuando se juege un torneo estandar con los parametros seteados anteriormente" should
+//    "devolver a alguien que no sabemos todavia"
+//
+//    torneoVeto.jugar.shouldEqual(None)
+//
+//  "Cuando se juege un torneo estandar con los parametros seteados anteriormente" should
+//    "devolver a alguien que no sabemos todavia"
+//
+//    torneoHandicap.jugar.shouldEqual(None)
+
+//  "Cuando se juege un torneo estandar con los parametros seteados anteriormente" should
+//    s"gano el equipo ${equipoGanador.get.asInstanceOf[Equipo].nombre}"
+//
+//    val equipoGanador = torneoPorEquipos.jugar
+//    equipoGanador.get.asInstanceOf[Equipo].nombre.shouldEqual("TUVIEJA")
 
 }
