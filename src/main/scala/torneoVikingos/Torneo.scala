@@ -38,10 +38,14 @@ object Torneo {
     def reagruparEquipos(ganadores: List[Vikingo]): List[Participante] = {
       // Tengo los originales y recibo la lista de vikingos asi que puedo volver a formar los grupos
 
-      participantes.map(_ match {
-        case vikingo:Vikingo => if (ganadores.contains(vikingo)) vikingo:Participante
-        case e:Equipo => if (e.participantes.exists(ganadores.contains(_)))
-                            e.copy(participantes = e.participantes.filter(ganadores.contains(_))):Participante
+      val equiposGanadores = participantes.filter(_ match {
+        case vikingo:Vikingo => ganadores.contains(vikingo)
+        case e:Equipo => e.participantes.exists(ganadores.contains(_))
+      })
+
+      equiposGanadores.map(_ match {
+        case vikingo:Vikingo => vikingo
+        case e:Equipo => e.copy(participantes = e.participantes.filter(ganadores.contains(_)))
       })
     }
 
@@ -79,8 +83,8 @@ object Torneo {
         case Nil => None
         case g :: Nil => Some(g) // Si hay un solo elemento en la lista es el ganador
         case _ => participantes.head match{
-          case _:Equipo => Some(reglasTorneo.desempate(reagruparEquipos(sobrevivientes)))
           case _:Vikingo => Some(reglasTorneo.desempate(sobrevivientes))
+          case _:Equipo => Some(reglasTorneo.desempate(reagruparEquipos(sobrevivientes)))
         }
       }
     }
