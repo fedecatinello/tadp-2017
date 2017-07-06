@@ -6,18 +6,9 @@ import torneoVikingos._
 
 object Torneo {
 
-  // TODO: PROPUESTA PARA PODER TENER EQUIPOS EN EL TORNEO (BUZZA TKB)
-//  case class  UnidadCompetidora[T](integrantes: List[T])// puede ser 1 vikingo o un EQUIPO de vikingos
-//
-//  case class ReglasTorneo(
-//                           preparacion: (List[UnidadCompetidora[Vikingo]], List[Dragon], Posta) => List[UnidadCompetidora[Competidor]],
-//                           clasificacion: List[UnidadCompetidora[Competidor]] => List[UnidadCompetidora[Vikingo]],
-//                           desempate: List[UnidadCompetidora[Vikingo]] => Vikingo
-//                         )
-
   type ReglaPreparacion = (List[Vikingo], List[Dragon], Posta) => List[Competidor]
   type ReglaClasificacion = List[Competidor] => List[Competidor]
-  type ReglaDesempate = List[Vikingo] => Vikingo
+  type ReglaDesempate = List[Participante] => Participante
 
   case class ReglasTorneo(
                           preparacion: ReglaPreparacion,
@@ -44,10 +35,14 @@ object Torneo {
       }
     }
 
-    def reagruparEquipos(vikingos: List[Vikingo]): List[Equipo] = {
-      val originales = participantes // Tengo los originales y recibo la lista de vikingos asi que puedo volver a formar los grupos
+    def reagruparEquipos(ganadores: List[Vikingo]): List[Participante] = {
+      // Tengo los originales y recibo la lista de vikingos asi que puedo volver a formar los grupos
 
-      Nil // TODO: Borrar es solo para que tipe
+      participantes.map(_ match {
+        case vikingo:Vikingo => if (ganadores.contains(vikingo)) vikingo:Participante
+        case e:Equipo => if (e.participantes.exists(ganadores.contains(_)))
+                            e.copy(participantes = e.participantes.filter(ganadores.contains(_))):Participante
+      })
     }
 
     def jugar: Option[Participante] = {
@@ -64,6 +59,7 @@ object Torneo {
         (clasificados, posta) => {
 
           clasificados match {
+            case Nil => List()
             case ganador :: Nil => List(ganador)
             case x :: xs => {
               val competidores = reglasTorneo.preparacion(clasificados, dragonesDisponibles, posta)
@@ -75,20 +71,18 @@ object Torneo {
         }
       }
 
-      // Si estaba jugando con equipos
-
-
-      // Si no
-
       // Sobrevivientes es una lista de vikingos, si es un torneo de equipos tengo que volver a formar los equipos
       // si no era equipos va esto como antes:
-//      sobrevivientes match {
-//        case Nil => None
-//        case g :: Nil => Some(g) // Si hay un solo elemento en la lista es el ganador
-//        case _ => Some(reglasTorneo.desempate(sobrevivientes))
-//      }
 
-      None // TODO: Borrar es solo para que tipe
+
+      sobrevivientes match {
+        case Nil => None
+        case g :: Nil => Some(g) // Si hay un solo elemento en la lista es el ganador
+        case _ => participantes.head match{
+          case _:Equipo => Some(reglasTorneo.desempate(reagruparEquipos(sobrevivientes)))
+          case _:Vikingo => Some(reglasTorneo.desempate(sobrevivientes))
+        }
+      }
     }
 
   }
