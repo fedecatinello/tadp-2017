@@ -153,7 +153,7 @@ class PostaSpec extends FlatSpec with Matchers {
 
   val torneoVeto = Torneo(
     List(asger, arvid, asmund, ragnar, bjorn, ivar),
-    List(carrera, pescaConRequerimiento, pesca, combate),
+    List(carrera),
     List(d1, d2, d3),
     reglasEstandar.conPreparacion(preparacionVeto(_.especie == NadderMortífero))
   )
@@ -177,7 +177,7 @@ class PostaSpec extends FlatSpec with Matchers {
 
   val torneoHandicap = Torneo(
     List(asger, arvid, asmund, ragnar, bjorn, ivar),
-    List(carrera, pescaConRequerimiento, pesca, combate),
+    List(carrera),
     List(d1, d2, d3),
     reglasEstandar.conPreparacion(preparacionHandicap)
   )
@@ -189,9 +189,12 @@ class PostaSpec extends FlatSpec with Matchers {
     case _ => throw new RuntimeException("Se esperaba lista de equipos")
   }
 
+  val equipo1 = Equipo(nombre = "Rojo", List(asger, arvid, asmund))
+  val equipo2 = Equipo(nombre = "Azul", List(ragnar, bjorn, ivar))
+
   val torneoPorEquipos = Torneo(
-    List(asger, arvid, asmund, ragnar, bjorn, ivar),
-    List(carrera, pescaConRequerimiento, pesca, combate),
+    List(equipo1, equipo2),
+    List(carrera),
     List(d1, d2, d3),
     reglasEstandar.conDesempate(desempatePorEquipos)
   )
@@ -274,25 +277,29 @@ class PostaSpec extends FlatSpec with Matchers {
 
   }
 
-//  "Cuando se juege un torneo estandar con los parametros seteados anteriormente" should
-//    "devolver a alguien que no sabemos todavia"
-//
-//    torneoInverso.jugar.shouldEqual(None)
-//
-//  "Cuando se juege un torneo estandar con los parametros seteados anteriormente" should
-//    "devolver a alguien que no sabemos todavia"
-//
-//    torneoVeto.jugar.shouldEqual(None)
-//
-//  "Cuando se juege un torneo estandar con los parametros seteados anteriormente" should
-//    "devolver a alguien que no sabemos todavia"
-//
-//    torneoHandicap.jugar.shouldEqual(None)
+    "Cuando se juege un torneo estandar con los parametros seteados anteriormente" should "gano " in {
 
-//  "Cuando se juege un torneo estandar con los parametros seteados anteriormente" should
-//    s"gano el equipo ${equipoGanador.get.asInstanceOf[Equipo].nombre}"
-//
-//    val equipoGanador = torneoPorEquipos.jugar
-//    equipoGanador.get.asInstanceOf[Equipo].nombre.shouldEqual("TUVIEJA")
+      val equipoGanador = torneoPorEquipos.jugar
+      equipoGanador.getOrElse("No gano nadie").asInstanceOf[Equipo].nombre.shouldEqual("Rojo")
+    }
+
+
+  "Cuando se juege un torneo con handicap con los parametros seteados anteriormente" should "gano el equipo" in {
+
+    val equipoGanador = torneoHandicap.jugar
+    equipoGanador.getOrElse("No gano nadie").asInstanceOf[Vikingo].nombre.shouldEqual("Ragnar")
+  }
+
+  "Cuando se juege un torneo con Veto con los parametros seteados anteriormente" should "gano" in {
+
+    val equipoGanador = torneoVeto.jugar
+    equipoGanador.getOrElse("No gano nadie").asInstanceOf[Vikingo].nombre.shouldEqual("Ragnar")
+  }
+
+  "Cuando se juege un torneo con Inverso con los parametros seteados anteriormente" should "gano" in {
+
+    val equipoGanador = torneoInverso.jugar
+    equipoGanador.getOrElse("No gano nadie").asInstanceOf[Vikingo].nombre.shouldEqual("Arvid")
+  }
 
 }

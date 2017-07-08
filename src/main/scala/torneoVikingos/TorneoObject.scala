@@ -78,8 +78,9 @@ object TorneoObject {
       reagruparEquipos(sobrevivientes) match {
         case Nil => None
         case g :: Nil => Some(g) // Si hay un solo elemento en la lista es el ganador
-        case _ => Some(reglasTorneo.desempate(sobrevivientes))
+        case ganadores => Some(reglasTorneo.desempate(ganadores))
         }
+
       }
 
   }
