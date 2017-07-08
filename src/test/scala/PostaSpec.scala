@@ -100,7 +100,7 @@ class PostaSpec extends FlatSpec with Matchers {
 
   val torneoEstandar = Torneo(
     List(asger, arvid, asmund, ragnar, bjorn, ivar),
-    List(combate),
+    List(combate,carrera,pesca),
     List(d1, d2, d3),
     reglasEstandar
   )
